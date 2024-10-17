@@ -68,6 +68,15 @@ paths:
           description: Sensor not found
         '422':
           description: Validation exception
+  /ping:
+    get:
+      tags:
+        - sync
+      operationId: getPing
+      description: A ping feature to test from the frontend if the Backend to FPF connection exists, in case there are no recent data points for some reason, could be used for some more finegrained debugging/connection status
+      responses:
+        '200':
+          description: Successful operation
 components:
   schemas:
     Sensor:
