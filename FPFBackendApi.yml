@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Swagger Farminsight FPF Synchronization - OpenAPI 3.0
+  title: Swagger Farminsight FPF Backend - OpenAPI 3.0
   description: |-
-    Endpoints that the FPF Camera Service provides for synchronization purposes
+    Endpoints that the FPF Backend Service provides for synchronization purposes
   termsOfService: TOS
   contact:
     email: apiteam@swagger.io
@@ -17,11 +17,67 @@ servers:
   - url: https://anants-pi-cluster.de/api
 tags:
   - name: sync
-    description: Synchronization for Camera configuration
-  - name: stream
-    description: Camera stream
+    description: Synchronization for Sensor and Camera configuration
 paths:
-  /synchronise:
+  /synchronise/sensor:
+    post:
+      tags:
+        - sync
+      summary: Upload sensor configuration for synchronization
+      operationId: postSensorConfiguration
+      requestBody:
+        description: Array of Sensors
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Sensor'
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Sensor not found
+        '422':
+          description: Validation exception
+  /sensorInterval/{sensorId}:
+    post:
+      tags:
+        - sync
+      summary: Upload new sensor interval
+      description: Uploads new measurement interval of Sensor
+      operationId: postSensorInterval
+      parameters:
+        - name: sensorId
+          in: path
+          description: ID of Sensor that the Interval belong to
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Sensor measurement interval in seconds
+        content:
+          application/json:
+            schema:
+              type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Sensor not found
+        '422':
+          description: Validation exception
+  /ping:
+    get:
+      tags:
+        - sync
+      operationId: getPing
+      description: A ping feature to test from the frontend if the Backend to FPF connection exists, in case there are no recent data points for some reason, could be used for some more finegrained debugging/connection status
+      responses:
+        '200':
+          description: Successful operation
+  /synchronise/camera:
     post:
       tags:
         - sync
@@ -90,6 +146,28 @@ paths:
           description: Camera not found
 components:
   schemas:
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+        unit:
+          type: string
+          enum:
+            - °C
+            - °F
+            - kg
+        modelNr:
+          type: string
+        isActive:
+          type: boolean
+        intervalSeconds:
+          type: integer
     Camera:
       type: object
       properties:
