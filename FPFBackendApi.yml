@@ -18,6 +18,8 @@ servers:
 tags:
   - name: sync
     description: Synchronization for Sensor and Camera configuration
+  - name: sensor
+  - name: camera
 paths:
   /synchronize/fpfId:
     post:
@@ -34,10 +36,19 @@ paths:
       responses:
         '200':
           description: Successful operation
-  /synchronize/sensor:
-    post:
+  /ping:
+    get:
       tags:
         - sync
+      operationId: getPing
+      description: A ping feature to test from the frontend if the Backend to FPF connection exists, in case there are no recent data points for some reason, could be used for some more finegrained debugging/connection status
+      responses:
+        '200':
+          description: Successful operation
+  /sensors/synchronize:
+    post:
+      tags:
+        - sensor
       summary: Upload sensor configuration for synchronization
       operationId: postSensorConfiguration
       requestBody:
@@ -55,27 +66,27 @@ paths:
           description: Sensor not found
         '422':
           description: Validation exception
-  /sensorInterval/{sensorId}:
+  /sensors/measurementInterval:
     post:
       tags:
-        - sync
+        - sensor
       summary: Upload new sensor interval
       description: Uploads new measurement interval of Sensor
       operationId: postSensorInterval
-      parameters:
-        - name: sensorId
-          in: path
-          description: ID of Sensor that the Interval belong to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         description: Sensor measurement interval in seconds
         content:
           application/json:
             schema:
-              type: integer
+              type: object
+              properties:
+                sensorId:
+                  description: ID of Sensor that the Interval belong to
+                  type: string
+                  format: uuid
+                intervalInSeconds:
+                  description: Interval in which Sensor Measurements should be taken
+                  type: integer
       responses:
         '200':
           description: Successful operation
@@ -83,19 +94,10 @@ paths:
           description: Sensor not found
         '422':
           description: Validation exception
-  /ping:
-    get:
-      tags:
-        - sync
-      operationId: getPing
-      description: A ping feature to test from the frontend if the Backend to FPF connection exists, in case there are no recent data points for some reason, could be used for some more finegrained debugging/connection status
-      responses:
-        '200':
-          description: Successful operation
-  /synchronize/camera:
+  /cameras/synchronize:
     post:
       tags:
-        - sync
+        - camera
       summary: Upload Camera configuration for synchronization
       operationId: postCameraConfiguration
       requestBody:
@@ -113,27 +115,27 @@ paths:
           description: Camera not found
         '422':
           description: Validation exception
-  /imageInterval/{cameraId}:
+  /cameras/imageInterval:
     post:
       tags:
-        - sync
+        - camera
       summary: Upload new camera interval
       description: Uploads image interval of Camera
       operationId: postCameraInterval
-      parameters:
-        - name: cameraId
-          in: path
-          description: ID of Camera that the Interval belong to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         description: Camera image interval in seconds
         content:
           application/json:
             schema:
-              type: integer
+              type: object
+              properties:
+                cameraId:
+                  description: ID of Camera that the Interval belong to
+                  type: string
+                  format: uuid
+                intervalInSeconds:
+                  description: Interval in which Camera images should be sent to Backend
+                  type: integer
       responses:
         '200':
           description: Successful operation
@@ -141,10 +143,10 @@ paths:
           description: Camera not found
         '422':
           description: Validation exception
-  /stream/{cameraId}:
+  /cameras/stream/{cameraId}:
     get:
       tags:
-        - stream
+        - camera
       summary: Video stream of a Camera
       parameters:
         - name: cameraId
