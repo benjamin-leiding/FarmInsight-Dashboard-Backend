@@ -16,14 +16,12 @@ externalDocs:
 servers:
   - url: https://anants-pi-cluster.de/api
 tags:
-  - name: auth
-    description: Operations about Authentification
   - name: userprofile
     description: Operations about userprofile management
   - name: membership
     description: Operations about Membership management
-  - name: organisation
-    description: Operations about Organisation management
+  - name: organization
+    description: Operations about Organization management
   - name: fpf
     description: Operations about FPF management
   - name: camera
@@ -35,7 +33,7 @@ tags:
   - name: data
     description: FPF, Sensor and Camera data retrieveal
 paths:
-  /fpf:
+  /fpfs:
     put:
       tags:
         - fpf
@@ -66,36 +64,31 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /fpf/{organisationId}:
     post:
       tags:
         - fpf
-      summary: Add a new FPF to the organisation
-      description: Add a new FPF to the organisation
+      summary: Add a new FPF to the organization
+      description: Add a new FPF to the organization
       operationId: addFPF
-      parameters:
-        - name: organisationId
-          in: path
-          description: ID of Organisation that the FPF belongs to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
-        description: Create a new FPF in the organisation
+        description: Create a new FPF in the organization
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FPF'
+              type: object
+              properties:
+                organizationId:
+                  description: ID of Organization that the FPF belongs to
+                  type: string
+                  format: uuid
+                fpf:
+                  $ref: '#/components/schemas/FPF'
         required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/FPF'          
-            application/xml:
               schema:
                 $ref: '#/components/schemas/FPF'
         '400':
@@ -106,7 +99,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /fpf/{fpfId}:
+  /fpfs/{fpfId}:
     get:
       tags:
         - fpf
@@ -136,54 +129,6 @@ paths:
         - api_key: []
         - farminsight_auth:
             - read:fpfs
-    post:
-      tags:
-        - fpf
-      summary: Updates FPF with form data
-      description: ''
-      operationId: updateFPFWithForm
-      parameters:
-        - name: fpfId
-          in: path
-          description: ID of FPF that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: name
-          in: query
-          description: Name of FPF that needs to be updated
-          schema:
-            type: string
-        - name: isVisible
-          in: query
-          description: Visibility of FPF that needs to be updated
-          schema:
-            type: boolean
-        - name: sensorServiceIp
-          in: query
-          description: Sensor Service IP of the FPF that needs to be updated
-          schema:
-            type: string
-            format: ipv4
-        - name: cameraServiceIp
-          in: query
-          description: Camera Service IP of the FPF that needs to be updated
-          schema:
-            type: string
-            format: ipv4
-        - name: adress
-          in: query
-          description: Adress of FPF that needs to be updated
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     delete:
       tags:
         - fpf
@@ -205,12 +150,12 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /fpf/all:
+  /fpfs/visible:
     get:
       tags:
         - fpf
-      summary: Lists all FPFs
-      description: Returns List of all FPFs visible to the user
+      summary: Lists visible FPFs
+      description: Returns List of all FPFs visible to the user includes non public ones that user is member of
       operationId: getFPFAll
       responses:
         '200':
@@ -220,8 +165,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FPF'
-  /fpf/member:
+                  $ref: '#/components/schemas/FPFTK'
+  /fpfs/own:
     get:
       tags:
         - fpf
@@ -236,20 +181,20 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FPF'
-  /organisation:
+                  $ref: '#/components/schemas/FPFTK'
+  /organizations:
     put:
       tags:
-        - organisation
-      summary: Update an existing Organisation
-      description: Update an existing Organisation
-      operationId: updateOrganisation
+        - organization
+      summary: Update an existing Organization
+      description: Update an existing Organization
+      operationId: updateOrganization
       requestBody:
-        description: Update an existent Organisation
+        description: Update an existent Organization
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organisation'
+              $ref: '#/components/schemas/Organization'
         required: true
       responses:
         '200':
@@ -257,11 +202,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organisation'
+                $ref: '#/components/schemas/Organization'
         '400':
           description: Invalid ID supplied
         '404':
-          description: Organisation not found
+          description: Organization not found
         '422':
           description: Validation exception
       security:
@@ -270,16 +215,16 @@ paths:
             - read:pets
     post:
       tags:
-        - organisation
-      summary: Add a new Organisation
-      description: Add a new Organisation
-      operationId: addOrganisation
+        - organization
+      summary: Add a new Organization
+      description: Add a new Organization
+      operationId: addOrganization
       requestBody:
-        description: Create a new Organisation
+        description: Create a new Organization
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organisation'
+              $ref: '#/components/schemas/Organization'
         required: true
       responses:
         '200':
@@ -287,10 +232,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organisation'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Organisation'
+                $ref: '#/components/schemas/Organization'
         '400':
           description: Invalid input
         '422':
@@ -299,17 +241,17 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /organisation/{organisationId}:
+  /organizations/{organizationId}:
     get:
       tags:
-        - organisation
-      summary: Find Organisation by ID
-      description: Returns a single Organisation
-      operationId: getOrganisationById
+        - organization
+      summary: Find Organization by ID
+      description: Returns a single Organization
+      operationId: getOrganizationById
       parameters:
-        - name: organisationId
+        - name: organizationId
           in: path
-          description: ID of Organisation to return
+          description: ID of Organization to return
           required: true
           schema:
             type: string
@@ -320,56 +262,25 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organisation'
+                $ref: '#/components/schemas/Organization'
         '400':
           description: Invalid ID supplied
         '404':
-          description: Organisation not found
+          description: Organization not found
       security:
         - api_key: []
         - farminsight_auth:
-            - read:organisations
-    post:
-      tags:
-        - organisation
-      summary: Updates Organisation with form data
-      description: ''
-      operationId: updateOrganisationWithForm
-      parameters:
-        - name: organisationId
-          in: path
-          description: ID of Organisation that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: name
-          in: query
-          description: Name of Organisation that needs to be updated
-          schema:
-            type: string
-        - name: isVisible
-          in: query
-          description: Visibility of Organisation that needs to be updated
-          schema:
-            type: boolean
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+            - read:organizations
     delete:
       tags:
-        - organisation
-      summary: Deletes Organisation
-      description: delete Organisation
-      operationId: deleteOrganisation
+        - organization
+      summary: Deletes Organization
+      description: delete Organization
+      operationId: deleteOrganization
       parameters:
-        - name: organisationId
+        - name: organizationId
           in: path
-          description: Organisation id to delete
+          description: Organization id to delete
           required: true
           schema:
             type: string
@@ -381,13 +292,13 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /organisation/all:
+  /organizations/visible:
     get:
       tags:
-        - organisation
-      summary: Lists all Organisations
-      description: Returns List of all organisations visible to the user
-      operationId: getOrganisationAll
+        - organization
+      summary: Lists all Organizations
+      description: Returns List of all organizations visible to the user
+      operationId: getOrganizationAll
       responses:
         '200':
           description: successful operation
@@ -396,14 +307,14 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organisation'
-  /organisation/member:
+                  $ref: '#/components/schemas/OrganizationTK'
+  /organizations/own:
     get:
       tags:
-        - organisation
-      summary: Lists organisations that user is member of
-      description: Resturns List of all organisations that the user has a Membership of
-      operationId: getOrganisationMemberOf
+        - organization
+      summary: Lists organizations that user is member of or owns
+      description: Resturns List of all organizations that the user has a Membership of
+      operationId: getOrganizationMemberOf
       responses:
         '200':
           description: successful operation
@@ -412,8 +323,8 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organisation'
-  /camera:
+                  $ref: '#/components/schemas/Organization'
+  /cameras:
     put:
       tags:
         - camera
@@ -444,36 +355,31 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /camera/{fpfId}:
     post:
       tags:
         - camera
       summary: Add a new Camera to the FPF
       description: Add a new Camera to the FPF
       operationId: addCamera
-      parameters:
-        - name: fpfId
-          in: path
-          description: ID of FPF that the Camera belongs to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         description: Create a new Camera in the FPF
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Camera'
+              type: object
+              properties:
+                fpfId:
+                  description: ID of FPF that the Camera belongs to
+                  type: string
+                  format: uuid
+                camera:
+                  $ref: '#/components/schemas/Camera'
         required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Camera'          
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Camera'
         '400':
@@ -484,7 +390,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /camera/{cameraId}:
+  /cameras/{cameraId}:
     get:
       tags:
         - camera
@@ -514,57 +420,6 @@ paths:
         - api_key: []
         - farminsight_auth:
             - read:cameras
-    post:
-      tags:
-        - camera
-      summary: Updates Camera with form data
-      description: ''
-      operationId: updateCameraWithForm
-      parameters:
-        - name: cameraId
-          in: path
-          description: ID of Camera that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: name
-          in: query
-          description: Name of Camera that needs to be updated
-          schema:
-            type: string
-        - name: location
-          in: query
-          description: Location of Camera that needs to be updated
-          schema:
-            type: string
-        - name: modelNr
-          in: query
-          description: Model Nr of Camera that needs to be updated
-          schema:
-            type: string
-        - name: resolution
-          in: query
-          description: Resolution of the Camera that needs to be updated
-          schema:
-            type: string
-        - name: isActive
-          in: query
-          description: Status of the Camera that needs to be updated
-          schema:
-            type: boolean
-        - name: intervalSeconds
-          in: query
-          description: Image recording interval in Seconds of Camera that needs to be updated
-          schema:
-            type: integer
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     delete:
       tags:
         - camera
@@ -586,7 +441,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /sensor:
+  /sensors:
     put:
       tags:
         - sensor
@@ -617,36 +472,31 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /sensor/{fpfId}:
     post:
       tags:
         - sensor
       summary: Add a new Sensor to the FPF
       description: Add a new Sensor to the FPF
       operationId: addSensor
-      parameters:
-        - name: fpfId
-          in: path
-          description: ID of FPF that the Sensor belongs to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         description: Create a new Sensor in the FPF
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Sensor'
+              type: object
+              properties:
+                organizationId:
+                  description: ID of Organization that the FPF belongs to
+                  type: string
+                  format: uuid
+                sensor:
+                  $ref: '#/components/schemas/Sensor'
         required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/Sensor'          
-            application/xml:
               schema:
                 $ref: '#/components/schemas/Sensor'
         '400':
@@ -657,7 +507,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /sensor/{sensorId}:
+  /sensors/{sensorId}:
     get:
       tags:
         - sensor
@@ -687,79 +537,7 @@ paths:
         - api_key: []
         - farminsight_auth:
             - read:sensors
-    post:
-      tags:
-        - sensor
-      summary: Updates Sensor with form data
-      description: ''
-      operationId: updateSensorWithForm
-      parameters:
-        - name: sensorId
-          in: path
-          description: ID of Sensor that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: name
-          in: query
-          description: Name of Sensor that needs to be updated
-          schema:
-            type: string
-        - name: location
-          in: query
-          description: Location of Sensor that needs to be updated
-          schema:
-            type: string
-        - name: unit
-          in: query
-          description: Unit of the Sensor that needs to be updated
-          schema:
-            type: string
-        - name: modelNr
-          in: query
-          description: Model Nr of the Sensor that needs to be updated
-          schema:
-            type: string
-        - name: isActive
-          in: query
-          description: Status of Sensor that needs to be updated
-          schema:
-            type: boolean
-        - name: intervalSeconds
-          in: query
-          description: Measurement Interval in Seconds of Sensor that needs to be updated
-          schema:
-            type: integer
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
-    delete:
-      tags:
-        - sensor
-      summary: Deletes Sensor
-      description: delete Sensor
-      operationId: deleteSensor
-      parameters:
-        - name: sensorId
-          in: path
-          description: Sensor id to delete
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
-  /growingCycle:
+  /growingCycles:
     put:
       tags:
         - cycle
@@ -790,36 +568,31 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /growingCycle/{fpfId}:
     post:
       tags:
         - cycle
       summary: Add a new GrowingCycle to the FPF
       description: Add a new GrowingCycle to the FPF
       operationId: addGrowingCycle
-      parameters:
-        - name: fpfId
-          in: path
-          description: ID of FPF that the GrowingCycle belongs to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
         description: Create a new GrowingCycle in the FPF
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GrowingCycle'
+              type: object
+              properties:
+                organizationId:
+                  description: ID of Organization that the FPF belongs to
+                  type: string
+                  format: uuid
+                growingCycle:
+                  $ref: '#/components/schemas/GrowingCycle'
         required: true
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/GrowingCycle'          
-            application/xml:
               schema:
                 $ref: '#/components/schemas/GrowingCycle'
         '400':
@@ -830,7 +603,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /growingCycle/{growingCycleId}:
+  /growingCycles/{growingCycleId}:
     get:
       tags:
         - cycle
@@ -860,49 +633,6 @@ paths:
         - api_key: []
         - farminsight_auth:
             - read:growingCycles
-    post:
-      tags:
-        - cycle
-      summary: Updates GrowingCycle with form data
-      description: ''
-      operationId: updateGrowingCycleWithForm
-      parameters:
-        - name: growingCycleId
-          in: path
-          description: ID of GrowingCycle that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: startDate
-          in: query
-          description: Start Date of GrowingCycle that needs to be updated
-          schema:
-            type: string
-            format: date-time
-        - name: endDate
-          in: query
-          description: End Date of GrowingCycle that needs to be updated
-          schema:
-            type: string
-            format: date-time
-        - name: plants
-          in: query
-          description: Plants of the GrowingCycle that needs to be updated
-          schema:
-            type: string
-        - name: note
-          in: query
-          description: Note of the GrowingCycle that needs to be updated
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     delete:
       tags:
         - cycle
@@ -924,7 +654,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /userprofile:
+  /userprofiles:
     put:
       tags:
         - userprofile
@@ -955,21 +685,35 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /userprofile/{userprofileId}:
     get:
       tags:
         - userprofile
-      summary: Find Userprofile by ID
-      description: Returns a single Userprofile
-      operationId: getUserprofileById
+      summary: Returns list of Userprofiles by search string
+      description: Returns list of Userprofiles matching the search string in name or email
+      operationId: getUserprofileWithSearch
       parameters:
-        - name: userprofileId
-          in: path
-          description: ID of Userprofile to return
+        - name: searchString
+          in: query
+          description: todo
           required: true
           schema:
             type: string
-            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Userprofile'
+  /userprofiles/own:
+    get:
+      tags:
+        - userprofile
+      summary: Find Userprofile by user
+      description: Returns a single Userprofile if no Userprofile exists yet creates one
+      operationId: getUserprofile
       responses:
         '200':
           description: successful operation
@@ -984,49 +728,13 @@ paths:
       security:
         - api_key: []
         - farminsight_auth:
-            - read:userprofiles
-    post:
-      tags:
-        - userprofile
-      summary: Updates Userprofile with form data
-      description: ''
-      operationId: updateUserprofileWithForm
-      parameters:
-        - name: userprofileId
-          in: path
-          description: ID of Userprofile that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: name
-          in: query
-          description: Name of Userprofile that needs to be updated
-          schema:
-            type: string
-        - name: email
-          in: query
-          description: Email of Userprofile that needs to be updated
-          schema:
-            type: string
-            format: email
-        - name: systemRole
-          in: query
-          description: System Role of Userprofile that needs to be updated
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+          - read:userprofiles
+  /userprofiles/{userprofileId}:
     delete:
       tags:
         - userprofile
       summary: Deletes Userprofile
-      description: delete Userprofile
+      description: Delete Userprofile if request is made by the owner of the Userprofile or Systemadmin
       operationId: deleteUserprofile
       parameters:
         - name: userprofileId
@@ -1043,7 +751,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /userprofile/all:
+  /userprofiles/all:
     get:
       tags:
         - userprofile
@@ -1062,39 +770,7 @@ paths:
       security:
         - farminsight_auth:
           - read:userprofiles
-        
-  /create_account:
-    post:
-      tags:
-        - auth
-      responses:
-        '302':
-          description: Redirect to user TUC isse server
-          headers:
-            Location:
-              schema:
-                type: string
-                format: uri
-  /login:
-    post:
-      tags:
-        - auth
-      responses:
-        '302':
-          description: Redirect to user TUC isse server
-          headers:
-            Location:
-              schema:
-                type: string
-                format: uri
-  /logout:
-    post:
-      tags:
-        - auth
-      responses:
-        '200':
-          description: successful operation
-  /membership:
+  /memberships:
     put:
       tags:
         - membership
@@ -1125,34 +801,29 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /membership/{organisationId}/{useprofileId}:
     post:
       tags:
         - membership
-      summary: Add a new Membership to the Organisation
-      description: Add a new Membership to the Organisation
+      summary: Add a new Membership to the Organization
+      description: Add a new Membership to the Organization
       operationId: addMembership
-      parameters:
-        - name: organisationId
-          in: path
-          description: ID of Organisation that the Membership belongs to
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: useprofileId
-          in: path
-          description: ID of Userprofile that the Membership belongs to
-          required: true
-          schema:
-            type: string
-            format: uuid
       requestBody:
-        description: Create a new Membership in the Organisation
+        description: Create a new Membership in the Organization
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Membership'
+              type: object
+              properties:
+                organizationId:
+                  description: ID of Organization that the Membership belongs to
+                  type: string
+                  format: uuid
+                useprofileId:
+                  description: ID of User that the Membership belongs to
+                  type: string
+                  format: uuid
+                membership:
+                  $ref: '#/components/schemas/Membership'
         required: true
       responses:
         '200':
@@ -1172,7 +843,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /membership/{membershipId}:
+  /memberships/{membershipId}:
     get:
       tags:
         - membership
@@ -1202,32 +873,6 @@ paths:
         - api_key: []
         - farminsight_auth:
             - read:memberships
-    post:
-      tags:
-        - membership
-      summary: Updates Membership with form data
-      description: ''
-      operationId: updateMembershipWithForm
-      parameters:
-        - name: membershipId
-          in: path
-          description: ID of Membership that needs to be updated
-          required: true
-          schema:
-            type: string
-            format: uuid
-        - name: membershipRole
-          in: query
-          description: Membership Role of Membership that needs to be updated
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid input
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     delete:
       tags:
         - membership
@@ -1249,7 +894,7 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
-  /data/fpf/{fpfId}:
+  /fpfs/{fpfId}/data:
     get:
       tags:
         - data
@@ -1282,8 +927,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FPF'
-  /data/fpf/ws/{fpfId}:
+                $ref: '#/components/schemas/FPFData'
+  /fpfs/{fpfId}/ws:
     get:
       tags:
         - data
@@ -1304,8 +949,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FPF'
-  /data/sensor/{sensorId}:
+                $ref: '#/components/schemas/FPFData'
+  /sensors/{sensorId}/data:
     get:
       tags:
         - data
@@ -1338,8 +983,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Sensor'
-  /data/camera/{cameraId}:
+                $ref: '#/components/schemas/SensorData'
+  /cameras/{cameraId}/data:
     get:
       tags:
         - data
@@ -1372,7 +1017,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Camera'
+                $ref: '#/components/schemas/CameraData'
 components:
   schemas:
     Userprofile:
@@ -1394,7 +1039,18 @@ components:
         memberships:
           type: array
           items:
-            $ref: '#/components/schemas/Membership'
+            $ref: '#/components/schemas/MembershipTK'
+    UserprofileTK:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+          format: email
     Membership:
       type: object
       properties:
@@ -1411,9 +1067,21 @@ components:
           format: date-time
           description: the date-time notation as defined by RFC 3339, section 5.6
           example: 2017-07-21T17:32:28Z
-        organisation:
-          $ref: '#/components/schemas/Organisation'
-    Organisation:
+        userprofile:
+            $ref: '#/components/schemas/UserprofileTK'
+        organization:
+          $ref: '#/components/schemas/OrganizationTK'
+    MembershipTK:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userprofile:
+          $ref: '#/components/schemas/UserprofileTK'
+        organization:
+          $ref: '#/components/schemas/OrganizationTK'
+    Organization:
       type: object
       properties:
         id:
@@ -1421,12 +1089,28 @@ components:
           format: uuid
         name:
           type: string
-        isVisible:
+        isPublic:
           type: boolean
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipTK'
         FPFs:
           type: array
           items:
-            $ref: '#/components/schemas/FPF'
+            $ref: '#/components/schemas/FPFTK'
+    OrganizationTK:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        fpfs:
+          type: array
+          items:
+            $ref: '#/components/schemas/FPFTK'
     FPF:
       type: object
       properties:
@@ -1435,7 +1119,7 @@ components:
           format: uuid
         name:
           type: string
-        isVisible:
+        isPublic:
           type: boolean
         sensorServiceIp:
           type: string
@@ -1448,16 +1132,163 @@ components:
         Sensors:
           type: array
           items:
-            $ref: '#/components/schemas/Sensor'
+            $ref: '#/components/schemas/SensorTK'
         Cameras:
           type: array
           items:
-            $ref: '#/components/schemas/Camera'
+            $ref: '#/components/schemas/CameraTK'
         GrowingCycles:
           type: array
           items:
             $ref: '#/components/schemas/GrowingCycle'
+    FPFTK:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
     Camera:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+        modelNr:
+          type: string
+        resolution:
+          type: string
+        isActive:
+          type: boolean
+        intervalSeconds:
+          type: integer
+    CameraTK:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    Sensor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+        unit:
+          type: string
+          enum:
+            - °C
+            - °F
+            - kg
+        modelNr:
+          type: string
+        isActive:
+          type: boolean
+        intervalSeconds:
+          type: integer
+    SensorTK:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+    GrowingCycle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        plants:
+          type: string
+        note:
+          type: string
+    FPFData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        isPublic:
+          type: boolean
+        sensorServiceIp:
+          type: string
+          format: ipv4
+        cameraServiceIp:
+          type: string
+          format: ipv4
+        adress:
+          type: string
+        Sensors:
+          type: array
+          items:
+            $ref: '#/components/schemas/SensorData'
+        Cameras:
+          type: array
+          items:
+            $ref: '#/components/schemas/CameraData'
+        GrowingCycles:
+          type: array
+          items:
+            $ref: '#/components/schemas/GrowingCycle'
+    SensorData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        location:
+          type: string
+        unit:
+          type: string
+          enum:
+            - °C
+            - °F
+            - kg
+        modelNr:
+          type: string
+        isActive:
+          type: boolean
+        intervalSeconds:
+          type: integer
+        measurements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Measurement'
+    Measurement:
+      type: object
+      properties:
+        measuredAt:
+          type: string
+          format: date-time
+          description: the date-time notation as defined by RFC 3339, section 5.6
+          example: 2017-07-21T17:32:28Z
+        value:
+          type: number
+          format: double
+    CameraData:
       type: object
       properties:
         id:
@@ -1490,59 +1321,6 @@ components:
         url:
           type: string
           format: url
-    Sensor:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        location:
-          type: string
-        unit:
-          type: string
-          enum:
-            - °C
-            - °F
-            - kg
-        modelNr:
-          type: string
-        isActive:
-          type: boolean
-        intervalSeconds:
-          type: integer
-        values:
-          type: array
-          items:
-            $ref: '#/components/schemas/Measurement'
-    Measurement:
-      type: object
-      properties:
-        measuredAt:
-          type: string
-          format: date-time
-          description: the date-time notation as defined by RFC 3339, section 5.6
-          example: 2017-07-21T17:32:28Z
-        value:
-          type: number
-          format: double
-    GrowingCycle:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        startDate:
-          type: string
-          format: date-time
-        endDate:
-          type: string
-          format: date-time
-        plants:
-          type: string
-        note:
-          type: string
     ApiResponse:
       type: object
       properties:
@@ -1554,12 +1332,12 @@ components:
         message:
           type: string
   requestBodies:
-    Organisation:
-      description: Organisation object that needs to be added
+    Organization:
+      description: Organization object that needs to be added
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Organisation'
+            $ref: '#/components/schemas/Organization'
   securitySchemes:
     farminsight_auth:
       type: oauth2
