@@ -30,6 +30,8 @@ tags:
     description: Operations about Camera management
   - name: sensor
     description: Operations about Sensor management
+  - name: cycle
+    description: Operations about Growing Cycle management
   - name: data
     description: FPF, Sensor and Camera data retrieveal
 paths:
@@ -757,6 +759,171 @@ paths:
         - farminsight_auth:
             - write:pets
             - read:pets
+  /growingCycle:
+    put:
+      tags:
+        - cycle
+      summary: Update an existing GrowingCycle
+      description: Update an existing GrowingCycle by Id
+      operationId: updateGrowingCycle
+      requestBody:
+        description: Update an existing GrowingCycle
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrowingCycle'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrowingCycle'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: GrowingCycle not found
+        '422':
+          description: Validation exception
+      security:
+        - farminsight_auth:
+            - write:pets
+            - read:pets
+  /growingCycle/{fpfId}:
+    post:
+      tags:
+        - cycle
+      summary: Add a new GrowingCycle to the FPF
+      description: Add a new GrowingCycle to the FPF
+      operationId: addGrowingCycle
+      parameters:
+        - name: fpfId
+          in: path
+          description: ID of FPF that the GrowingCycle belongs to
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Create a new GrowingCycle in the FPF
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GrowingCycle'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrowingCycle'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/GrowingCycle'
+        '400':
+          description: Invalid input
+        '422':
+          description: Validation exception
+      security:
+        - farminsight_auth:
+            - write:pets
+            - read:pets
+  /growingCycle/{growingCycleId}:
+    get:
+      tags:
+        - cycle
+      summary: Find GrowingCycle by ID
+      description: Returns a single GrowingCycle
+      operationId: getGrowingCycleById
+      parameters:
+        - name: growingCycleId
+          in: path
+          description: ID of GrowingCycle to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrowingCycle'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: GrowingCycle not found
+      security:
+        - api_key: []
+        - farminsight_auth:
+            - read:growingCycles
+    post:
+      tags:
+        - cycle
+      summary: Updates GrowingCycle with form data
+      description: ''
+      operationId: updateGrowingCycleWithForm
+      parameters:
+        - name: growingCycleId
+          in: path
+          description: ID of GrowingCycle that needs to be updated
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: startDate
+          in: query
+          description: Start Date of GrowingCycle that needs to be updated
+          schema:
+            type: string
+            format: date-time
+        - name: endDate
+          in: query
+          description: End Date of GrowingCycle that needs to be updated
+          schema:
+            type: string
+            format: date-time
+        - name: plants
+          in: query
+          description: Plants of the GrowingCycle that needs to be updated
+          schema:
+            type: string
+        - name: note
+          in: query
+          description: Note of the GrowingCycle that needs to be updated
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid input
+      security:
+        - farminsight_auth:
+            - write:pets
+            - read:pets
+    delete:
+      tags:
+        - cycle
+      summary: Deletes GrowingCycle
+      description: delete GrowingCycle
+      operationId: deleteGrowingCycle
+      parameters:
+        - name: growingCycleId
+          in: path
+          description: GrowingCycle id to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '400':
+          description: Invalid pet value
+      security:
+        - farminsight_auth:
+            - write:pets
+            - read:pets
   /userprofile:
     put:
       tags:
@@ -1286,6 +1453,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Camera'
+        GrowingCycles:
+          type: array
+          items:
+            $ref: '#/components/schemas/GrowingCycle'
     Camera:
       type: object
       properties:
@@ -1356,6 +1527,22 @@ components:
         value:
           type: number
           format: double
+    GrowingCycle:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        plants:
+          type: string
+        note:
+          type: string
     ApiResponse:
       type: object
       properties:
