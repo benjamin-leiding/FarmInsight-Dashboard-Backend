@@ -19,7 +19,22 @@ tags:
   - name: sync
     description: Synchronization for Sensor and Camera configuration
 paths:
-  /synchronise/sensor:
+  /synchronize/fpfId:
+    post:
+      tags:
+        - sync
+      summary: Upload FPF Id
+      operationId: postFPFId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: uuid
+      responses:
+        '200':
+          description: Successful operation
+  /synchronize/sensor:
     post:
       tags:
         - sync
@@ -77,7 +92,7 @@ paths:
       responses:
         '200':
           description: Successful operation
-  /synchronise/camera:
+  /synchronize/camera:
     post:
       tags:
         - sync
