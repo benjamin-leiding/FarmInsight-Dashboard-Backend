@@ -21,8 +21,8 @@ class FarminsightDashboardBackendConfig(AppConfig):
 
             bucket_api = client.buckets_api()
 
-            # Ensure the database is ready to avoid errors during initial migrations
             if not FPF.objects.exists():
+                logging.warning("Unable to find any FPFs in the database.")
                 return
             for fpf in FPF.objects.all():
                 if not bucket_api.find_bucket_by_name(str(fpf.id)):
