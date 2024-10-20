@@ -15,7 +15,7 @@ class MeasurementView(views.APIView):
         :param sensorId: GUID of the sensor
         :return: HTTP response
         """
-        data = request.data.get('measurements')
+        data = request.data
         sensor = Sensor.objects.get(id=sensorId)
 
         influxdb_settings = getattr(settings, 'INFLUXDB_CLIENT_SETTINGS', {})
