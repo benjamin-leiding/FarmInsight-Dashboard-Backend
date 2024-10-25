@@ -39,8 +39,13 @@ INFLUXDB_CLIENT_SETTINGS = {
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+]
 
 # Application definition
 
@@ -51,19 +56,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+    'corsheaders',
     'farminsight_dashboard_backend.apps.FarminsightDashboardBackendConfig',
+    'rest_framework',
+    'oauth2_provider',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'django_server.urls'
 
@@ -133,6 +144,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'farminsight_dashboard_backend.Userprofile'
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -155,3 +168,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+OAUTH2_PROVIDER = {
+    'SCOPES' : { "openid": '' },
+    'RESOURCE_SERVER_INTROSPECTION_URL': 'https://development-isse-identityserver.azurewebsites.net/connect/introspect',
+    'RESOURCE_SERVER_INTROSPECTION_CREDENTIALS': ('interactive', ''),
+    'OAUTH2_VALIDATOR_CLASS': 'farminsight_dashboard_backend.custom_oauth_validator.CustomOAuth2Validator',
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+}
