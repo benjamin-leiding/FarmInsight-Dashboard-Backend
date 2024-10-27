@@ -16,35 +16,9 @@ externalDocs:
 servers:
   - url: https://anants-pi-cluster.de/api
 tags:
-  - name: sync
-    description: Synchronization for Sensor and Camera configuration
   - name: sensor
   - name: camera
 paths:
-  /synchronize/fpfId:
-    post:
-      tags:
-        - sync
-      summary: Upload FPF Id
-      operationId: postFPFId
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: string
-              format: uuid
-      responses:
-        '200':
-          description: Successful operation
-  /ping:
-    get:
-      tags:
-        - sync
-      operationId: getPing
-      description: A ping feature to test from the frontend if the Backend to FPF connection exists, in case there are no recent data points for some reason, could be used for some more finegrained debugging/connection status
-      responses:
-        '200':
-          description: Successful operation
   /sensors/synchronize:
     post:
       tags:
@@ -62,8 +36,8 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '404':
-          description: Sensor not found
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
   /sensors/measurementInterval:
@@ -90,8 +64,8 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '404':
-          description: Sensor not found
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
   /cameras/synchronize:
@@ -111,8 +85,8 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '404':
-          description: Camera not found
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
   /cameras/imageInterval:
@@ -139,8 +113,8 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '404':
-          description: Camera not found
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
   /cameras/stream/{cameraId}:
@@ -159,6 +133,8 @@ paths:
       responses:
         '200':
           description: Successful operation
+        '403':
+          description: Forbidden
         '404':
           description: Camera not found
 components:

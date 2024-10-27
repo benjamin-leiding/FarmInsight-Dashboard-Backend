@@ -45,7 +45,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FPF'
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                isPublic:
+                  type: boolean
+                sensorServiceIp:
+                  type: string
+                  format: ipv4
+                cameraServiceIp:
+                  type: string
+                  format: ipv4
+                adress:
+                  type: string
         required: true
       responses:
         '200':
@@ -53,17 +69,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FPF'
-        '400':
-          description: Invalid ID supplied
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+                  sensorServiceIp:
+                    type: string
+                    format: ipv4
+                  cameraServiceIp:
+                    type: string
+                    format: ipv4
+                  adress:
+                    type: string
+        '403':
+          description: Forbidden
         '404':
           description: FPF not found
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     post:
       tags:
         - fpf
@@ -82,23 +110,51 @@ paths:
                   type: string
                   format: uuid
                 fpf:
-                  $ref: '#/components/schemas/FPF'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    isPublic:
+                      type: boolean
+                    sensorServiceIp:
+                      type: string
+                      format: ipv4
+                    cameraServiceIp:
+                      type: string
+                      format: ipv4
+                    adress:
+                      type: string
         required: true
       responses:
-        '200':
-          description: Successful operation
+        '201':
+          description: Object created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FPF'
-        '400':
-          description: Invalid input
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+                  sensorServiceIp:
+                    type: string
+                    format: ipv4
+                  cameraServiceIp:
+                    type: string
+                    format: ipv4
+                  adress:
+                    type: string
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
   /fpfs/{fpfId}:
     get:
       tags:
@@ -120,15 +176,41 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FPF'
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+                  sensorServiceIp:
+                    type: string
+                    format: ipv4
+                  cameraServiceIp:
+                    type: string
+                    format: ipv4
+                  adress:
+                    type: string
+                  Sensors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SensorTK'
+                  Cameras:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CameraTK'
+                  GrowingCycles:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GrowingCycle'
         '400':
           description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: FPF not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-            - read:fpfs
     delete:
       tags:
         - fpf
@@ -144,12 +226,12 @@ paths:
             type: string
             format: uuid
       responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+        '200':
+          description: successful operation
+        '404':
+          description: FPF not found
+        '403':
+          description: Forbidden
   /fpfs/visible:
     get:
       tags:
@@ -165,7 +247,15 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FPFTK'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    organization:
+                      $ref: '#/components/schemas/OrganizationTK'
   /fpfs/own:
     get:
       tags:
@@ -181,7 +271,15 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FPFTK'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    organization:
+                      $ref: '#/components/schemas/OrganizationTK'
   /organizations:
     put:
       tags:
@@ -194,7 +292,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                name:
+                  type: string
+                isPublic:
+                  type: boolean
         required: true
       responses:
         '200':
@@ -202,17 +308,21 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
-        '400':
-          description: Invalid ID supplied
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+        '403':
+          description: Forbidden
         '404':
           description: Organization not found
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     post:
       tags:
         - organization
@@ -224,23 +334,31 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Organization'
-        required: true
+              type: object
+              properties:
+                name:
+                  type: string
+                isPublic:
+                  type: boolean
       responses:
-        '200':
+        '201':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Organization'
-        '400':
-          description: Invalid input
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
   /organizations/{organizationId}:
     get:
       tags:
@@ -263,14 +381,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Organization'
-        '400':
-          description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: Organization not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-            - read:organizations
     delete:
       tags:
         - organization
@@ -286,12 +400,10 @@ paths:
             type: string
             format: uuid
       responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+        '200':
+          description: successful operation
+        '403':
+          description: Forbidden
   /organizations/visible:
     get:
       tags:
@@ -307,7 +419,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/OrganizationTK'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
   /organizations/own:
     get:
       tags:
@@ -323,7 +441,24 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Organization'
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    membership:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        role:
+                          type: string
+                          enum:
+                            - owner
+                            - member
   /cameras:
     put:
       tags:
@@ -345,16 +480,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Camera'
-        '400':
-          description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: Camera not found
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     post:
       tags:
         - camera
@@ -382,14 +513,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Camera'
-        '400':
-          description: Invalid input
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
   /cameras/{cameraId}:
     get:
       tags:
@@ -412,14 +539,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Camera'
-        '400':
-          description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: Camera not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-            - read:cameras
     delete:
       tags:
         - camera
@@ -435,12 +558,10 @@ paths:
             type: string
             format: uuid
       responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+        '403':
+          description: Forbidden
+        '404':
+          description: Camera not found
   /sensors:
     put:
       tags:
@@ -468,10 +589,6 @@ paths:
           description: Sensor not found
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     post:
       tags:
         - sensor
@@ -485,8 +602,8 @@ paths:
             schema:
               type: object
               properties:
-                organizationId:
-                  description: ID of Organization that the FPF belongs to
+                fpfId:
+                  description: ID of FPF that the Sensor belongs to
                   type: string
                   format: uuid
                 sensor:
@@ -499,14 +616,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sensor'
-        '400':
-          description: Invalid input
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
   /sensors/{sensorId}:
     get:
       tags:
@@ -529,14 +642,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Sensor'
-        '400':
-          description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: Sensor not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-            - read:sensors
   /growingCycles:
     put:
       tags:
@@ -558,16 +667,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GrowingCycle'
-        '400':
-          description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: GrowingCycle not found
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     post:
       tags:
         - cycle
@@ -581,8 +686,8 @@ paths:
             schema:
               type: object
               properties:
-                organizationId:
-                  description: ID of Organization that the FPF belongs to
+                fpfId:
+                  description: ID of FPF that the Growing cycle belongs to
                   type: string
                   format: uuid
                 growingCycle:
@@ -595,14 +700,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GrowingCycle'
-        '400':
-          description: Invalid input
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
   /growingCycles/{growingCycleId}:
     get:
       tags:
@@ -625,14 +726,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GrowingCycle'
-        '400':
-          description: Invalid ID supplied
+        '403':
+          description: Forbidden
         '404':
           description: GrowingCycle not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-            - read:growingCycles
     delete:
       tags:
         - cycle
@@ -648,12 +745,10 @@ paths:
             type: string
             format: uuid
       responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+        '403':
+          description: Forbidden
+        '404':
+          description: GrowingCycle not found
   /userprofiles:
     put:
       tags:
@@ -677,37 +772,10 @@ paths:
                 $ref: '#/components/schemas/Userprofile'
         '400':
           description: Invalid ID supplied
-        '404':
-          description: Userprofile not found
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
-    get:
-      tags:
-        - userprofile
-      summary: Returns list of Userprofiles by search string
-      description: Returns list of Userprofiles matching the search string in name or email
-      operationId: getUserprofileWithSearch
-      parameters:
-        - name: searchString
-          in: query
-          description: todo
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items: 
-                  $ref: '#/components/schemas/Userprofile'
-  /userprofiles/own:
     get:
       tags:
         - userprofile
@@ -721,14 +789,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Userprofile'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Userprofile not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-          - read:userprofiles
+        '403':
+          description: Forbidden
+  /userprofiles/find/{searchString}:
+    get:
+      tags:
+        - userprofile
+      summary: Returns list of Userprofiles by search string
+      description: Returns list of Userprofiles matching the search string in name or email
+      operationId: getUserprofileWithSearch
+      parameters:
+        - name: searchString
+          in: path
+          description: search string in name or email
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/Userprofile'
+        '403':
+          description: Forbidden
   /userprofiles/{userprofileId}:
     delete:
       tags:
@@ -745,31 +832,10 @@ paths:
             type: string
             format: uuid
       responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
-  /userprofiles/all:
-    get:
-      tags:
-        - userprofile
-      summary: Lists all Userprofiles
-      description: list Userprofile
-      operationId: getUserprofileAll
-      responses:
         '200':
           description: successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Userprofile'
-      security:
-        - farminsight_auth:
-          - read:userprofiles
+        '403':
+          description: Forbidden
   /memberships:
     put:
       tags:
@@ -782,7 +848,16 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Membership'
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                membershipRole:
+                  type: string
+                  enum:
+                    - owner
+                    - member
         required: true
       responses:
         '200':
@@ -790,17 +865,20 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Membership'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Membership not found
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  membershipRole:
+                    type: string
+                    enum:
+                      - owner
+                      - member
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
     post:
       tags:
         - membership
@@ -822,8 +900,11 @@ paths:
                   description: ID of User that the Membership belongs to
                   type: string
                   format: uuid
-                membership:
-                  $ref: '#/components/schemas/Membership'
+                membershipRole:
+                  type: string
+                  enum:
+                    - owner
+                    - member
         required: true
       responses:
         '200':
@@ -831,48 +912,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Membership'          
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Membership'
-        '400':
-          description: Invalid input
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: the date-time notation as defined by RFC 3339, section 5.6
+                    example: 2017-07-21T17:32:28Z
+                  membershipRole:
+                    type: string
+                    enum:
+                      - owner
+                      - member
+        '403':
+          description: Forbidden
         '422':
           description: Validation exception
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
   /memberships/{membershipId}:
-    get:
-      tags:
-        - membership
-      summary: Find Membership by ID
-      description: Returns a single Membership
-      operationId: getMembershipById
-      parameters:
-        - name: membershipId
-          in: path
-          description: ID of Membership to return
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Membership'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Membership not found
-      security:
-        - api_key: []
-        - farminsight_auth:
-            - read:memberships
     delete:
       tags:
         - membership
@@ -888,12 +947,10 @@ paths:
             type: string
             format: uuid
       responses:
-        '400':
-          description: Invalid pet value
-      security:
-        - farminsight_auth:
-            - write:pets
-            - read:pets
+        '200':
+          description: successful operation
+        '403':
+          description: Forbidden
   /fpfs/{fpfId}/data:
     get:
       tags:
@@ -928,6 +985,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FPFData'
+        '404':
+          description: FPF not found
   /fpfs/{fpfId}/ws:
     get:
       tags:
@@ -1036,10 +1095,6 @@ components:
           enum:
             - Admin
             - User
-        memberships:
-          type: array
-          items:
-            $ref: '#/components/schemas/MembershipTK'
     UserprofileTK:
       type: object
       properties:
@@ -1051,36 +1106,6 @@ components:
         email:
           type: string
           format: email
-    Membership:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        membershipRole:
-          type: string
-          enum:
-            - fpfOwner
-            - fpfMember
-        createdAt:
-          type: string
-          format: date-time
-          description: the date-time notation as defined by RFC 3339, section 5.6
-          example: 2017-07-21T17:32:28Z
-        userprofile:
-            $ref: '#/components/schemas/UserprofileTK'
-        organization:
-          $ref: '#/components/schemas/OrganizationTK'
-    MembershipTK:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        userprofile:
-          $ref: '#/components/schemas/UserprofileTK'
-        organization:
-          $ref: '#/components/schemas/OrganizationTK'
     Organization:
       type: object
       properties:
@@ -1094,7 +1119,23 @@ components:
         memberships:
           type: array
           items:
-            $ref: '#/components/schemas/MembershipTK'
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              membershipRole:
+                type: string
+                enum:
+                  - owner
+                  - member
+              createdAt:
+                type: string
+                format: date-time
+                description: the date-time notation as defined by RFC 3339, section 5.6
+                example: 2017-07-21T17:32:28Z
+              userprofile:
+                  $ref: '#/components/schemas/UserprofileTK'
         FPFs:
           type: array
           items:
@@ -1107,40 +1148,6 @@ components:
           format: uuid
         name:
           type: string
-        fpfs:
-          type: array
-          items:
-            $ref: '#/components/schemas/FPFTK'
-    FPF:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        isPublic:
-          type: boolean
-        sensorServiceIp:
-          type: string
-          format: ipv4
-        cameraServiceIp:
-          type: string
-          format: ipv4
-        address:
-          type: string
-        Sensors:
-          type: array
-          items:
-            $ref: '#/components/schemas/SensorTK'
-        Cameras:
-          type: array
-          items:
-            $ref: '#/components/schemas/CameraTK'
-        GrowingCycles:
-          type: array
-          items:
-            $ref: '#/components/schemas/GrowingCycle'
     FPFTK:
       type: object
       properties:
@@ -1321,16 +1328,6 @@ components:
         url:
           type: string
           format: url
-    ApiResponse:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        type:
-          type: string
-        message:
-          type: string
   requestBodies:
     Organization:
       description: Organization object that needs to be added
@@ -1338,17 +1335,3 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Organization'
-  securitySchemes:
-    farminsight_auth:
-      type: oauth2
-      flows:
-        implicit:
-          authorizationUrl: https://isse.de/oauth/authorize
-          scopes:
-            write:pets: modify pets in your account
-            read:pets: read your pets
-            read:userprofiles: read userprofiles
-    api_key:
-      type: apiKey
-      name: api_key
-      in: header
