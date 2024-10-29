@@ -1,4 +1,4 @@
-from ..models import Organization, Membership, MembershipRole
+from farminsight_dashboard_backend.models import Organization, Membership, MembershipRole
 
 
 def create_organization(name: str, is_public: bool, user) -> Organization:

@@ -1,4 +1,4 @@
-from ..serializers import FPFSerializer
+from farminsight_dashboard_backend.serializers import FPFSerializer
 
 
 def create_fpf(data) -> FPFSerializer:

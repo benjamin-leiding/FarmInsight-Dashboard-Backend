@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import FPF
+from farminsight_dashboard_backend.models import FPF
 
 
 class FPFSerializer(serializers.ModelSerializer):

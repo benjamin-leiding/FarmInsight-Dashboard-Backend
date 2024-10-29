@@ -7,5 +7,5 @@ urlpatterns = [
     path('organizations', post_organization, name='post_organization'),
     path('organizations/own', get_own_organizations, name='get_own_organizations'),
     path('fpfs', post_fpf, name='post_fpf'),
-    path('measurements/<str:sensorId>', MeasurementView.as_view(), name='sensor-measurements'),
+    path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
 ]
