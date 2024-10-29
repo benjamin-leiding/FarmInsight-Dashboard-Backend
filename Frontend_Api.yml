@@ -109,24 +109,18 @@ paths:
                   description: ID of Organization that the FPF belongs to
                   type: string
                   format: uuid
-                fpf:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uuid
-                    name:
-                      type: string
-                    isPublic:
-                      type: boolean
-                    sensorServiceIp:
-                      type: string
-                      format: ipv4
-                    cameraServiceIp:
-                      type: string
-                      format: ipv4
-                    adress:
-                      type: string
+                name:
+                  type: string
+                isPublic:
+                  type: boolean
+                sensorServiceIp:
+                  type: string
+                  format: ipv4
+                cameraServiceIp:
+                  type: string
+                  format: ipv4
+                adress:
+                  type: string
         required: true
       responses:
         '201':
