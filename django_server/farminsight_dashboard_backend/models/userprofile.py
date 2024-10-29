@@ -1,5 +1,12 @@
 import uuid
+from enum import Enum
+
 from django.db import models
+
+
+class SystemRole(Enum):
+    SystemAdmin = 'sysAdmin'
+    User = 'user'
 
 
 class Userprofile(models.Model):
