@@ -1,8 +1,14 @@
 import uuid
+from enum import Enum
 from django.db import models
 from django.utils import timezone
 from .userprofile import Userprofile
 from .organization import Organization
+
+
+class MembershipRole(Enum):
+    Admin = 'admin'
+    Member = 'member'
 
 
 class Membership(models.Model):
