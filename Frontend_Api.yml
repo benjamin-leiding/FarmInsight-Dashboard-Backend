@@ -105,7 +105,7 @@ paths:
             schema:
               type: object
               properties:
-                organizationId:
+                organization:
                   description: ID of Organization that the FPF belongs to
                   type: string
                   format: uuid
