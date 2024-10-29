@@ -12,6 +12,7 @@ from oauth2_provider.oauth2_validators import OAuth2Validator
 from oauth2_provider.settings import oauth2_settings
 from oauth2_provider.utils import get_timezone
 
+from models import SystemRole
 
 log = logging.getLogger("oauth2_provider")
 
@@ -69,7 +70,7 @@ class CustomOAuth2Validator(OAuth2Validator):
 
         if "active" in content and content["active"] is True:
             if "id" in content:
-                user, _ = UserModel.objects.get_or_create(**{UserModel.USERNAME_FIELD: content["id"], UserModel.EMAIL_FIELD: content["email"]})
+                user, _ = UserModel.objects.get_or_create(**{UserModel.USERNAME_FIELD: content["id"], UserModel.EMAIL_FIELD: content["email"], 'systemRole': SystemRole.User.value})
             else:
                 user = None
 
