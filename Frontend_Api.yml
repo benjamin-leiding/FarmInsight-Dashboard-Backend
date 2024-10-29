@@ -145,6 +145,10 @@ paths:
                     format: ipv4
                   adress:
                     type: string
+                  organization:
+                    description: ID of Organization that the FPF belongs to
+                    type: string
+                    format: uuid
         '403':
           description: Forbidden
         '422':
