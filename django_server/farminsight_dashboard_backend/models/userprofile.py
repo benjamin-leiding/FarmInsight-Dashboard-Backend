@@ -13,7 +13,7 @@ class Userprofile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=256)
     email = models.EmailField()
-    systemRole = models.CharField(max_length=256)
+    systemRole = models.CharField(max_length=256, default=SystemRole.User.value)
 
     EMAIL_FIELD = "email"
     USERNAME_FIELD = "id"
