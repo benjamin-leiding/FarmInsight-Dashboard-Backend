@@ -457,7 +457,7 @@ paths:
                         role:
                           type: string
                           enum:
-                            - owner
+                            - admin
                             - member
   /cameras:
     put:
@@ -856,7 +856,7 @@ paths:
                 membershipRole:
                   type: string
                   enum:
-                    - owner
+                    - admin
                     - member
         required: true
       responses:
@@ -873,7 +873,7 @@ paths:
                   membershipRole:
                     type: string
                     enum:
-                      - owner
+                      - admin
                       - member
         '403':
           description: Forbidden
@@ -903,7 +903,7 @@ paths:
                 membershipRole:
                   type: string
                   enum:
-                    - owner
+                    - admin
                     - member
         required: true
       responses:
@@ -925,7 +925,7 @@ paths:
                   membershipRole:
                     type: string
                     enum:
-                      - owner
+                      - admin
                       - member
         '403':
           description: Forbidden
@@ -1127,7 +1127,7 @@ components:
               membershipRole:
                 type: string
                 enum:
-                  - owner
+                  - admin
                   - member
               createdAt:
                 type: string
