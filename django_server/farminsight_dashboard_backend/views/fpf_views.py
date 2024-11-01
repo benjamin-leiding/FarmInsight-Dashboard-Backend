@@ -1,17 +1,12 @@
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from ..models import FPF
+from ..services import create_fpf
+
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def post_fpf(request):
-    fpf = FPF.objects.create(
-        organization_id=request.data['organizationId'],
-        name=request.data['fpf.name'],
-        isPublic=request.data['fpf.isPublic'],
-        sensorServiceIp=request.data['fpf.sensorServiceIp'],
-        cameraServiceIp=request.data['fpf.cameraServiceIp'],
-        address=request.data['fpf.address']
-    )
-    fpf.save()
-    return Response(fpf, status=status.HTTP_201_CREATED)
+    fpf = create_fpf(request.data)
+    return Response(fpf.data, status=status.HTTP_201_CREATED)
