@@ -11,4 +11,4 @@ class Sensor(models.Model):
     modelNr = models.CharField(max_length=256)
     isActive = models.BooleanField(default=False)
     intervalSeconds = models.IntegerField()
-    FPF = models.ForeignKey(FPF, on_delete=models.CASCADE)
+    FPF = models.ForeignKey(FPF, related_name='sensors', on_delete=models.CASCADE)

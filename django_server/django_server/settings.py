@@ -35,6 +35,7 @@ INFLUXDB_CLIENT_SETTINGS = {
     'token': env('INFLUXDB_INIT_TOKEN'),
     'org': env('DOCKER_INFLUXDB_INIT_ORG')
 }
+FALLBACK_DATA_RETRIEVAL_IN_DAYS = env('FALLBACK_DATA_RETRIEVAL_IN_DAYS')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
