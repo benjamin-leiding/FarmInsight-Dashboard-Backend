@@ -789,7 +789,7 @@ paths:
                 $ref: '#/components/schemas/Userprofile'
         '403':
           description: Forbidden
-  /userprofiles/find/{searchString}:
+  /userprofiles/{searchString}:
     get:
       tags:
         - userprofile
