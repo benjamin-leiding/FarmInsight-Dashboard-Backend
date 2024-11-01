@@ -1,10 +1,10 @@
 import uuid
-from enum import Enum
+from farminsight_dashboard_backend.utils import ListableEnum
 
 from django.db import models
 
 
-class SystemRole(Enum):
+class SystemRole(ListableEnum):
     SystemAdmin = 'sysAdmin'
     User = 'user'
 
@@ -26,6 +26,3 @@ class Userprofile(models.Model):
     @property
     def is_authenticated(self):
         return True
-
-    def to_dict(self):
-        return {"id": self.id, "name": self.name, "email": self.email, "systemRole": self.systemRole}

@@ -5,7 +5,7 @@ from farminsight_dashboard_backend.serializers import MembershipSerializer
 from farminsight_dashboard_backend.models import Userprofile, Membership, MembershipRole
 
 
-def get_memberships(user: Userprofile) -> QuerySet:
+def get_memberships(user: Userprofile) -> QuerySet[Membership]:
     return Membership.objects.filter(userprofile_id=user.id).prefetch_related('organization').all()
 
 
