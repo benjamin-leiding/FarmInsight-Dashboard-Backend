@@ -194,11 +194,11 @@ paths:
                   Sensors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SensorTK'
+                      $ref: '#/components/schemas/Sensor'
                   Cameras:
                     type: array
                     items:
-                      $ref: '#/components/schemas/CameraTK'
+                      $ref: '#/components/schemas/Camera'
                   GrowingCycles:
                     type: array
                     items:
@@ -1007,7 +1007,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FPFData'
-  /sensors/{sensorId}/data:
+  /sensors/{sensorId}/measurements:
     get:
       tags:
         - data
@@ -1040,8 +1040,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SensorData'
-  /cameras/{cameraId}/data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Measurement'
+  /cameras/{cameraId}/images:
     get:
       tags:
         - data
@@ -1074,7 +1076,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CameraData'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Image'
 components:
   schemas:
     Userprofile:
