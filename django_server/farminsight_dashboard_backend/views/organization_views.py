@@ -8,13 +8,8 @@ from farminsight_dashboard_backend.services import create_organization, get_memb
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def post_organization(request):
-    org = create_organization(request.data["name"], request.data["isPublic"], request.user)
-    data = {
-        "id": org.id,
-        "name": org.name,
-        "isPublic": org.isPublic,
-    }
-    return Response(data, status=status.HTTP_201_CREATED)
+    org = create_organization(request.data, request.user)
+    return Response(org.data, status=status.HTTP_201_CREATED)
 
 
 @api_view(['GET'])
