@@ -43,33 +43,4 @@ def fetch_sensor_measurements(fpf_id: str, sensor_ids: list, from_date: str, to_
                 "value": record.get_value()
             })
 
-    max_points = int(getattr(settings, 'MAX_MEASUREMENTS_PER_REQUEST', {}))
-    # Check the number of data points and aggregate if necessary
-    for sensor_id, data_points in measurements.items():
-        if len(data_points) > max_points:
-            measurements[sensor_id] = aggregate_data(data_points, max_points)
-
     return measurements
-
-
-def aggregate_data(data_points, max_points):
-    """
-    Aggregate data points by calculating the mean for segments to reduce the total number.
-    """
-    # Calculate the number of data points per segment
-    segment_size = max(1, len(data_points) // max_points)
-    aggregated_data = []
-
-    for i in range(0, len(data_points), segment_size):
-        segment = data_points[i:i + segment_size]
-
-        # Calculate the mean of the segment
-        mean_value = sum(point["value"] for point in segment) / len(segment)
-        mean_timestamp = segment[len(segment) // 2]["measuredAt"]
-
-        aggregated_data.append({
-            "measuredAt": mean_timestamp,
-            "value": mean_value
-        })
-
-    return aggregated_data

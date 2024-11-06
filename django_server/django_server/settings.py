@@ -36,7 +36,6 @@ INFLUXDB_CLIENT_SETTINGS = {
     'org': env('DOCKER_INFLUXDB_INIT_ORG')
 }
 FALLBACK_DATA_RETRIEVAL_IN_DAYS = env('FALLBACK_DATA_RETRIEVAL_IN_DAYS')
-MAX_MEASUREMENTS_PER_REQUEST = env('MAX_MEASUREMENTS_PER_REQUEST')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -114,16 +113,33 @@ DATABASES = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # Set to INFO or WARNING in production
             'class': 'logging.StreamHandler',
-        },
+            'formatter': 'simple',
+        }
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
+            'level': 'INFO',  # Set to INFO in production
+            'propagate': True,
+        },
+        'farminsight_dashboard_backend': {
+            'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }
