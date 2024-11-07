@@ -32,6 +32,7 @@ class FarminsightDashboardBackendConfig(AppConfig):
         try:
             from .models import FPF
 
+            client = None
             influxdb_settings = getattr(settings, 'INFLUXDB_CLIENT_SETTINGS', {})
 
             if not influxdb_settings:
@@ -45,8 +46,7 @@ class FarminsightDashboardBackendConfig(AppConfig):
 
                 bucket_api = client.buckets_api()
 
-                health = client.ping()
-                if health != "pass":
+                if not client.ping():
                     raise ConnectionError("InfluxDB is not healthy or reachable.")
 
                 if not FPF.objects.exists():
