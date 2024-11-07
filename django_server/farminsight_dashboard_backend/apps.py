@@ -42,6 +42,10 @@ class FarminsightDashboardBackendConfig(AppConfig):
 
                 bucket_api = client.buckets_api()
 
+                health = client.ping()
+                if health != "pass":
+                    raise ConnectionError("InfluxDB is not healthy or reachable.")
+
                 if not FPF.objects.exists():
                     self.log.warning("Unable to find any FPFs in the database.")
                     return
