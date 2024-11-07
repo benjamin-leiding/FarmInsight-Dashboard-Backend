@@ -34,7 +34,7 @@ def get_sensor_data(request, sensor_id):
     Get all measurements for a given sensor
     :param sensor_id:
     :param request:
-    :return:
+    :return: http response with measurement information as json
     """
     serializer = DateRangeSerializer(data=request.query_params)
     serializer.is_valid(raise_exception=True)

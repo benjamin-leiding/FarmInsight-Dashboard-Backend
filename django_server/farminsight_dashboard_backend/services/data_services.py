@@ -80,15 +80,4 @@ def get_all_sensor_data(sensorId, from_date=None, to_date=None):
                                                        from_date=from_date_iso,
                                                        to_date=to_date_iso)
 
-    sensor_data = {
-        "id": str(sensor.id),
-        "name": sensor.name,
-        "location": sensor.location,
-        "unit": sensor.unit,
-        "modelNr": sensor.modelNr,
-        "isActive": sensor.isActive,
-        "intervalSeconds": sensor.intervalSeconds,
-        "measurements": measurements_by_sensor.get(str(sensor.id), [])
-    }
-
-    return {'data': sensor_data, 'status': 200}
+    return {'data': measurements_by_sensor.get(str(sensor.id), []), 'status': 200}

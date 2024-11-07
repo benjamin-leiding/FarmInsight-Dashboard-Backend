@@ -26,6 +26,9 @@ class FarminsightDashboardBackendConfig(AppConfig):
             threading.Thread(target=self.setup_influxdb, daemon=True).start()
 
     def setup_influxdb(self):
+        """
+        Try to connect to the influxDB
+        """
         try:
             from .models import FPF
 
