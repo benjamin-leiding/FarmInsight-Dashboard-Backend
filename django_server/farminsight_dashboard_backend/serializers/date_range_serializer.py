@@ -6,8 +6,7 @@ class DateRangeSerializer(serializers.Serializer):
     """
     from_date = serializers.DateTimeField(
         input_formats=['%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%d'],
-        required=False,
-        default=None,
+        required=True
     )
 
     to_date = serializers.DateTimeField(
@@ -15,6 +14,24 @@ class DateRangeSerializer(serializers.Serializer):
         required=False,
         default=None,
     )
+
+    def validate(self, data):
+        """
+        Check that ``from`` parameter is given and that it is before the ``to`` parameter
+        :param data:
+        :return:
+        """
+        from_date = data.get('from_date')
+        to_date = data.get('to_date')
+
+        if from_date is None:
+            raise serializers.ValidationError({"from_date": "The 'from' query parameter is required."})
+
+
+        if to_date and to_date < from_date:
+            raise serializers.ValidationError({"to_date": "'to' date must be later than 'from' date."})
+
+        return data
 
     def to_internal_value(self, data):
         """
