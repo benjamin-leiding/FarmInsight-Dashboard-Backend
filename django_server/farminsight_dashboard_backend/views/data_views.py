@@ -42,7 +42,5 @@ def get_sensor_data(request, sensor_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    print(serializer.validated_data.get('from'), serializer.validated_data.get('from_date'))
-    print(serializer.validated_data)
     response = get_all_sensor_data(sensor_id, from_date, to_date)
     return Response(response['data'], status=response['status'])
