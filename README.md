@@ -37,7 +37,15 @@ DOCKER_INFLUXDB_INIT_USERNAME=admin
 INFLUXDB_INIT_PASSWORD=your_password
 INFLUXDB_INIT_TOKEN=your_token
 DOCKER_INFLUXDB_INIT_ORG=ETCE-LAB
+
+DEBUG=True
+SECRET_KEY=django-insecure-j_qnae2dq2!wltq1%ca7gku^ol8o7^t9-1xg5)gjw*1kcl)!d8
+
+ALLOWED_HOSTS=localhost,127.0.0.1
+CSRF_TRUSTED_ORIGINS=http://localhost:3000
+CORS_ALLOWED_ORIGINS=http://localhost:3000
 ```
+
 #### Docker Setup
 
 Using Docker Compose is the recommended way to manage your InfluxDB container.
