@@ -1,6 +1,7 @@
 from farminsight_dashboard_backend.models import FPF, Sensor
 from farminsight_dashboard_backend.utils import get_date_range
-from farminsight_dashboard_backend.utils.influx_data_query_utils import fetch_sensor_measurements
+from .influx_services import InfluxDBManager
+from ..exceptions import NotFoundException
 
 
 def get_all_fpf_data(fpfId, from_date=None, to_date=None):
@@ -15,7 +16,7 @@ def get_all_fpf_data(fpfId, from_date=None, to_date=None):
     try:
         fpf = FPF.objects.prefetch_related('sensors', 'cameras', 'growingCycles').get(id=fpfId)
     except FPF.DoesNotExist:
-        return {'data': {'error': f'FPF with id: {fpfId} not found.'}, 'status': 404}
+        raise NotFoundException(f'FPF with id: {fpfId} was not found.')
 
     # Set dates and convert to iso code
     from_date_iso, to_date_iso = get_date_range(from_date, to_date)
@@ -27,19 +28,21 @@ def get_all_fpf_data(fpfId, from_date=None, to_date=None):
         "sensorServiceIp": fpf.sensorServiceIp,
         "cameraServiceIp": fpf.cameraServiceIp,
         "address": fpf.address,
-        'sensors' : [],
-        "cameras": list(fpf.cameras.values('id', 'name', 'location', 'modelNr', 'resolution', 'isActive', 'intervalSeconds')),
-        'growingCycles' : list(fpf.growingCycles.values('id', 'startDate', 'endDate', 'plants', 'note'))
+        'sensors': [],
+        "cameras": list(
+            fpf.cameras.values('id', 'name', 'location', 'modelNr', 'resolution', 'isActive', 'intervalSeconds')),
+        'growingCycles': list(fpf.growingCycles.values('id', 'startDate', 'endDate', 'plants', 'note'))
     }
 
     # Collect all sensor IDs for InfluxDB query
     sensor_ids = [str(sensor.id) for sensor in fpf.sensors.all()]
 
     # Fetch measurements for all sensors in one call
-    measurements_by_sensor = fetch_sensor_measurements(fpf_id=fpf.id,
-                                                       sensor_ids=sensor_ids,
-                                                       from_date=from_date_iso,
-                                                       to_date=to_date_iso)
+    measurements_by_sensor = InfluxDBManager.get_instance().fetch_sensor_measurements(
+        fpf_id=fpf.id,
+        sensor_ids=sensor_ids,
+        from_date=from_date_iso,
+        to_date=to_date_iso)
 
     # Build sensors data with measurements included
     for sensor in fpf.sensors.all():
@@ -55,7 +58,8 @@ def get_all_fpf_data(fpfId, from_date=None, to_date=None):
         }
         fpf_data["sensors"].append(sensor_data)
 
-    return {'data': fpf_data, 'status': 200}
+    return fpf_data
+
 
 def get_all_sensor_data(sensorId, from_date=None, to_date=None):
     """
@@ -68,16 +72,17 @@ def get_all_sensor_data(sensorId, from_date=None, to_date=None):
     """
     try:
         sensor = Sensor.objects.get(id=sensorId)
-    except FPF.DoesNotExist:
-        return {'data': {'error': f'FPF with id: {sensorId} not found.'}, 'status': 404}
+    except Sensor.DoesNotExist:
+        raise NotFoundException(f'Sensor with id: {sensorId} was not found.')
 
     # Set dates and convert to iso code
     from_date_iso, to_date_iso = get_date_range(from_date, to_date)
 
-        # Fetch measurements for all sensors in one call
-    measurements_by_sensor = fetch_sensor_measurements(fpf_id=str(sensor.FPF.id),
-                                                       sensor_ids=[str(sensor.id)],
-                                                       from_date=from_date_iso,
-                                                       to_date=to_date_iso)
+    # Fetch measurements for all sensors in one call
+    measurements_by_sensor = InfluxDBManager.get_instance().fetch_sensor_measurements(
+        fpf_id=str(sensor.FPF.id),
+        sensor_ids=[str(sensor.id)],
+        from_date=from_date_iso,
+        to_date=to_date_iso)
 
-    return {'data': measurements_by_sensor.get(str(sensor.id), []), 'status': 200}
+    return measurements_by_sensor.get(str(sensor.id), [])

@@ -1,9 +1,6 @@
-from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from farminsight_dashboard_backend.serializers import DateRangeSerializer
-from ..services import create_fpf
 from ..services import get_all_fpf_data, get_all_sensor_data
 
 
@@ -24,8 +21,7 @@ def get_fpf_data(request, fpf_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    response = get_all_fpf_data(fpf_id, from_date, to_date)
-    return Response(response['data'], status=response['status'])
+    return Response(get_all_fpf_data(fpf_id, from_date, to_date))
 
 
 @api_view(['GET'])
@@ -42,5 +38,4 @@ def get_sensor_data(request, sensor_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    response = get_all_sensor_data(sensor_id, from_date, to_date)
-    return Response(response['data'], status=response['status'])
+    return Response(get_all_sensor_data(sensor_id, from_date, to_date))

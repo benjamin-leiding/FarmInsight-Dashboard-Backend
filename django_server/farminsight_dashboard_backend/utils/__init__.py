@@ -1,4 +1,3 @@
 from .enum_util import ListableEnum
 from .date_utils import get_date_range
-from .influx_data_query_utils import fetch_sensor_measurements
 from .api_key_generator import generate_random_api_key
