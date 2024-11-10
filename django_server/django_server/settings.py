@@ -17,18 +17,16 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-j_qnae2dq2!wltq1%ca7gku^ol8o7^t9-1xg5)gjw*1kcl)!d8'
-
 # Initialize environment variables
 env = environ.Env()
 
 # Development-specific environment variables
-environ.Env.read_env(os.path.join(BASE_DIR, '.env.dev'))
+dev_env_path = BASE_DIR / '.env.dev'
+if os.path.exists(dev_env_path):
+    environ.Env.read_env(dev_env_path)
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env('SECRET_KEY')
 
 INFLUXDB_CLIENT_SETTINGS = {
     'url': env('INFLUXDB_URL'),
@@ -37,15 +35,13 @@ INFLUXDB_CLIENT_SETTINGS = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG') == 'True'
 
-ALLOWED_HOSTS = [
-    '*',
-]
+ALLOWED_HOSTS = env('ALLOWED_HOSTS').split(',')
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-]
+CSRF_TRUSTED_ORIGINS = env('CSRF_TRUSTED_ORIGINS').split(',')
+
+CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS').split(',')
 
 # Application definition
 
@@ -73,8 +69,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'django_server.urls'
 
