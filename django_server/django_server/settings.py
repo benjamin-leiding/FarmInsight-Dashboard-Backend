@@ -192,3 +192,5 @@ REST_FRAMEWORK = {
     ),
     "EXCEPTION_HANDLER": "farminsight_dashboard_backend.exceptions.exceptions.custom_exception_handler",
 }
+
+URL_PREFIX = env('URL_PREFIX', default='api/')

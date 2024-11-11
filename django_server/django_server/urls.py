@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('farminsight_dashboard_backend.urls')),
+    path(settings.URL_PREFIX + 'admin/', admin.site.urls),
+    path(settings.URL_PREFIX + 'api/', include('farminsight_dashboard_backend.urls')),
 ]
