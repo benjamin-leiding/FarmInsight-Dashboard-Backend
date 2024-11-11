@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicd-test-nodejs-deployment #The name of the Kubernetes
+        #Deployment to be created in the Kubernetes cluster
+  namespace: cicd-test
+  labels:
+    app: cicd-test-nodejs
+spec:
+  replicas: 1 #The number of pods to be created in the
+   #Kubernetes cluster for the React.js application container
+  selector:
+    matchLabels:
+      app: cicd-test-nodejs
+  template:
+    metadata:
+      labels:
+        app: cicd-test-nodejs
+    spec:
+      imagePullSecrets:
+      - name: docker-registry-private
+      containers:
+      - name: cicd-test-nodejs #The name of the react.js application container
+        #The Docker image for building the node.js application container
+        image: registry.etce.isse.tu-clausthal.de/etce-lab/cicd-test-nodejs:latest
+        ports:
+        - containerPort: 3000 #The port for the node.js application container

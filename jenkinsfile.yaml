@@ -1,0 +1,38 @@
+pipeline {
+  environment {
+    dockerregistry = "https://registry.etce.isse.tu-clausthal.de"
+    dockerregistrycredential = "docker-registry-private"
+    dockerimagename = "registry.etce.isse.tu-clausthal.de/etce-lab/farminsight-dashboard-backend:latest"
+    dockerImage = ""
+  }
+  agent any
+  stages {
+    stage('Checkout Source') {
+      steps {
+        git url: 'https://github.com/ETCE-LAB/FarmInsight-Dashboard-Backend.git',
+            branch: 'Infrastructure-Setup'
+      }
+    }
+    stage('Build image') {
+      steps{
+        script{
+        dockerImage = docker.build(dockerimagename)
+        }
+      }
+    }
+    stage('Deploy Image'){
+      steps{
+        script{
+          docker.withRegistry(dockerregistry, dockerregistrycredential){
+          dockerImage.push("latest")
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image'){
+      steps{
+        sh 'docker rmi $dockerimagename'
+      }
+    }
+  }
+}
