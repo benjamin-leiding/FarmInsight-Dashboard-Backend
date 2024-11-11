@@ -36,7 +36,7 @@ spec:
         ports:
         - containerPort: 8000 #The port for the node.js application container
         volumeMounts:
-            - name: env.dev
+            - name: farminsight-env
               mountPath: /app/.env.dev
               subPath: .env.dev
               readOnly: true
