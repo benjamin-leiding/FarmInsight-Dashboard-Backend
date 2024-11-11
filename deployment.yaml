@@ -28,6 +28,8 @@ spec:
             - name: farminsight-env
               mountPath: /app/environment
               readOnly: true
+            - name: farminsight-backend-sqlite
+              mountPath: /app/database/db.sqlite3
       volumes:
       - name: farminsight-env
         configMap:
@@ -35,3 +37,6 @@ spec:
           items:
             - key: .env.dev
               path: .env.dev
+      - name: farminsight-backend-sqlite
+        persistentVolumeClaim:
+          claimName: farminsight-backend-sqlite-pvc
