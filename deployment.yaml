@@ -1,27 +1,49 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: farminsight-env
+data:
+  env.dev: |
+       stuff
+
+---
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cicd-test-nodejs-deployment #The name of the Kubernetes
+  name: farminsight-dashboard-backend #The name of the Kubernetes
         #Deployment to be created in the Kubernetes cluster
-  namespace: cicd-test
+  namespace: farminsight
   labels:
-    app: cicd-test-nodejs
+    app: farminsight-dashboard-backend
 spec:
   replicas: 1 #The number of pods to be created in the
    #Kubernetes cluster for the React.js application container
   selector:
     matchLabels:
-      app: cicd-test-nodejs
+      app: farminsight-dashboard-backend
   template:
     metadata:
       labels:
-        app: cicd-test-nodejs
+        app: farminsight-dashboard-backend
     spec:
       imagePullSecrets:
       - name: docker-registry-private
       containers:
-      - name: cicd-test-nodejs #The name of the react.js application container
-        #The Docker image for building the node.js application container
-        image: registry.etce.isse.tu-clausthal.de/etce-lab/cicd-test-nodejs:latest
+      - name: farminsight-dashboard-backend
+        image: registry.etce.isse.tu-clausthal.de/etce-lab/farminsight-dashboard-backend:latest
         ports:
-        - containerPort: 3000 #The port for the node.js application container
+        - containerPort: 8000 #The port for the node.js application container
+        volumeMounts:
+            - name: env.dev
+              mountPath: /app/.env.dev
+              subPath: .env.dev
+              readOnly: true
+      volumes:
+      - name: farminsight-env
+        configMap:
+          name: farminsight-env
+          items:
+            - key: env.dev
+              path: env.dev

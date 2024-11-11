@@ -3,13 +3,13 @@ kind: Service
 metadata:
   #The name of the Kubernetes Service to be created
   #in the Kubernetes cluster
-  name: cicd-test-nodejs-service
-  namespace: cicd-test
+  name: farminsight-dashboard-backend-service
+  namespace: farminsight
 spec:
   selector:
-    app: cicd-test-nodejs
+    app: farminsight-dashboard-backend
   type: LoadBalancer #Type of the Kubernetes Service
   ports:
   - protocol: TCP
-    port: 3000 #Service port
-    targetPort: 3000 #The port for the React.js application container
+    port: 8000 #Service port
+    targetPort: 8000 #The port for the React.js application container
