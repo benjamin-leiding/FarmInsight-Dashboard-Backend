@@ -2,7 +2,11 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from farminsight_dashboard_backend.services import create_organization, get_memberships
+
+from farminsight_dashboard_backend.serializers import OrganizationSerializer
+from farminsight_dashboard_backend.services import create_organization, get_organization_by_name, get_memberships, \
+    get_organization_by_id
+from farminsight_dashboard_backend.utils import is_valid_uuid
 
 
 @api_view(['POST'])
@@ -27,3 +31,16 @@ def get_own_organizations(request):
             }
         })
     return Response(data)
+
+
+@api_view(['GET'])
+def get_organization(request, organization_identifier):
+    if is_valid_uuid(organization_identifier):
+        org = get_organization_by_id(organization_identifier)
+    else:
+        org = get_organization_by_name(organization_identifier)
+
+    if org is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    return Response(OrganizationSerializer(org).data)
