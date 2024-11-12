@@ -1,14 +1,17 @@
 from django.urls import path
 
 from farminsight_dashboard_backend.views import (
-    get_userprofile,
     get_userprofile_by_search_string,
-    post_organization,
-    post_fpf,
     get_own_organizations,
     post_membership,
-    MeasurementView
+    MeasurementView,
+    get_userprofile,
+    post_organization,
+    post_fpf,
+    get_fpf_data,
+    get_sensor_data
 )
+
 
 urlpatterns = [
     path('userprofiles', get_userprofile, name='get_userprofile'),
@@ -17,5 +20,7 @@ urlpatterns = [
     path('memberships', post_membership, name='post_membership'),
     path('organizations/own', get_own_organizations, name='get_own_organizations'),
     path('fpfs', post_fpf, name='post_fpf'),
-    path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
+    path('fpfs/<str:fpf_id>/data', get_fpf_data, name='get_fpf_data'),
+    path('sensors/<str:sensor_id>/measurements', get_sensor_data, name='get_sensor_data'),
+    path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements')
 ]

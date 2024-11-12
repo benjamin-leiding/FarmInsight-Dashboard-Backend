@@ -112,16 +112,33 @@ DATABASES = {
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
-            'level': 'DEBUG',
+            'level': 'DEBUG',  # Set to INFO or WARNING in production
             'class': 'logging.StreamHandler',
-        },
+            'formatter': 'simple',
+        }
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
+            'level': 'INFO',  # Set to INFO in production
+            'propagate': True,
+        },
+        'farminsight_dashboard_backend': {
+            'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }
@@ -170,7 +187,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 OAUTH2_PROVIDER = {
-    'SCOPES' : { "openid": '' },
+    'SCOPES': {"openid": ''},
     'RESOURCE_SERVER_INTROSPECTION_URL': 'https://development-isse-identityserver.azurewebsites.net/connect/introspect',
     'RESOURCE_SERVER_INTROSPECTION_CREDENTIALS': ('interactive', ''),
     'OAUTH2_VALIDATOR_CLASS': 'farminsight_dashboard_backend.custom_oauth_validator.CustomOAuth2Validator',
@@ -180,4 +197,5 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ),
+    'EXCEPTION_HANDLER': 'farminsight_dashboard_backend.exceptions.exceptions.custom_exception_handler'
 }

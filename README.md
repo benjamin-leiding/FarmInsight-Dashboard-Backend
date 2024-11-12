@@ -51,6 +51,23 @@ It simplifies the startup, shutdown, and maintenance of Docker applications.
 ```
 docker-compose down
 ```
+
+#### Starting the Django app
+Start on 
+```
+python manage.py runsever
+```
+Run on a desired port
+```
+python manage.py runserver localhost:8002 
+```
+
+If necessary, migrate the database
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+
 ## Running the application
 ### Manual Querying of data with Influx CLI
 
