@@ -357,17 +357,17 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /organizations/{organizationId}:
+  /organizations/{organizationIdentifier}:
     get:
       tags:
         - organization
-      summary: Find Organization by ID
+      summary: Find Organization by ID or by name
       description: Returns a single Organization
-      operationId: getOrganizationById
+      operationId: getOrganizationByIdent
       parameters:
-        - name: organizationId
+        - name: organizationIdentifier
           in: path
-          description: ID of Organization to return
+          description: ID or Name of Organization to return
           required: true
           schema:
             type: string
