@@ -390,7 +390,7 @@ paths:
       description: delete Organization
       operationId: deleteOrganization
       parameters:
-        - name: organizationId
+        - name: organizationIdentifier
           in: path
           description: Organization id to delete
           required: true
