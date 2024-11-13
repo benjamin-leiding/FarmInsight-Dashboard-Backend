@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from ..services import create_fpf
+from farminsight_dashboard_backend.services import create_fpf
 
 
 @api_view(['POST'])
