@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: farminsight-backend-sqlite-pvc
 spec:
+  storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
   resources:

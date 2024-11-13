@@ -28,7 +28,7 @@ spec:
             - name: farminsight-env
               mountPath: /app/environment
               readOnly: true
-            - name: farminsight-backend-sqlite
+            - name: farminsight-backend-sqlite-pv
               mountPath: /app/database/db.sqlite3
       volumes:
       - name: farminsight-env
