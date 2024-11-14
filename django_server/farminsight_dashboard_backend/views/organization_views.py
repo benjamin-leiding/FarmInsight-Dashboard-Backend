@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from farminsight_dashboard_backend.serializers import OrganizationSerializer
+from farminsight_dashboard_backend.serializers import OrganizationFullSerializer
 from farminsight_dashboard_backend.services import create_organization, get_organization_by_name, get_memberships, \
     get_organization_by_id
 from farminsight_dashboard_backend.utils import is_valid_uuid
@@ -43,4 +43,7 @@ def get_organization(request, organization_identifier):
     if org is None:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-    return Response(OrganizationSerializer(org).data)
+    if len(org.membership_set.filter(userprofile=request.user).all()) == 0: # this Endpoint is only for org members
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    return Response(OrganizationFullSerializer(org).data)

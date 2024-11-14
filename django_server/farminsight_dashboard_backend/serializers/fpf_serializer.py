@@ -18,3 +18,9 @@ class FPFSerializer(serializers.ModelSerializer):
         if len(fpfs) > 0:
             raise serializers.ValidationError({"name":"This name is already taken for this organization"})
         return data
+
+
+class FPFTechnicalKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FPF
+        fields = ['id', 'name']
