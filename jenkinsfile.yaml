@@ -35,15 +35,16 @@ pipeline {
       }
     }
     stage('Re-deploy Kubernetes Pod'){
-      withKubeConfig([
-        credentialsID: 'jenkins-kubernetes-token',
-        namespace: 'farminsight',
-        serverURL: 'https://digit-25-222.digit.tu-clausthal.de:6443'
-      ]) {
-          sh 'kubectl -n farminsight delete pods -l=app=farminsight-dashboard-backend'
-          sh 'kubectl -n farminsight apply -f deployment.yaml'
-          sh 'kubectl -n farminsight apply -f service.yaml'
-       }
+      steps{
+        withKubeConfig([
+          credentialsID: 'jenkins-kubernetes-token',
+          namespace: 'farminsight',
+          serverURL: 'https://digit-25-222.digit.tu-clausthal.de:6443'
+        ]) {
+            sh 'kubectl -n farminsight delete pods -l=app=farminsight-dashboard-backend'
+            sh 'kubectl -n farminsight apply -f deployment.yaml'
+            sh 'kubectl -n farminsight apply -f service.yaml'
+       }}
     }
   }
 }
