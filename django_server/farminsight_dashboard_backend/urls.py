@@ -3,7 +3,6 @@ from django.urls import path
 from farminsight_dashboard_backend.views import (
     get_userprofile_by_search_string,
     get_own_organizations,
-    post_membership,
     MeasurementView,
     get_userprofile,
     post_organization,
@@ -11,7 +10,7 @@ from farminsight_dashboard_backend.views import (
     get_fpf_data,
     get_sensor_data, get_organization
 )
-
+from farminsight_dashboard_backend.views.membership_views import MembershipView
 
 urlpatterns = [
     path('userprofiles', get_userprofile, name='get_userprofile'),
@@ -19,7 +18,8 @@ urlpatterns = [
     path('organizations/own', get_own_organizations, name='get_own_organizations'),
     path('organizations', post_organization, name='post_organization'),
     path('organizations/<str:organization_identifier>', get_organization, name='get_organization'),
-    path('memberships', post_membership, name='post_membership'),
+    path('memberships', MembershipView.as_view(), name='post_membership'),
+    path('memberships/<str:membership_id>', MembershipView.as_view(), name='membership_operations'),
     path('fpfs', post_fpf, name='post_fpf'),
     path('fpfs/<str:fpf_id>/data', get_fpf_data, name='get_fpf_data'),
     path('sensors/<str:sensor_id>/measurements', get_sensor_data, name='get_sensor_data'),
