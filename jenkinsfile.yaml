@@ -41,8 +41,8 @@ pipeline {
           namespace: 'farminsight',
           serverURL: 'https://digit-25-222.digit.tu-clausthal.de:6443/'
         ]) {
-            sh '/bin/kubectl -n farminsight get pods'
             sh '/bin/kubectl'
+            sh '/bin/kubectl -n farminsight get pods'
             sh '/bin/kubectl -n farminsight delete pods -l=app=farminsight-dashboard-backend'
             sh '/bin/kubectl -n farminsight apply -f deployment.yaml'
             sh '/bin/kubectl -n farminsight apply -f service.yaml'
