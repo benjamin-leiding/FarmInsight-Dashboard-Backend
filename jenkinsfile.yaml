@@ -36,7 +36,7 @@ pipeline {
     }
     stage('Re-deploy Kubernetes Pod'){
       steps{
-        withCredential([
+        withCredentials([
           credentialsID: 'jenkins-farminsight-kubernetes-token',
           variable: 'TOKEN'
         ]) {
