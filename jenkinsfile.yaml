@@ -37,9 +37,9 @@ pipeline {
     stage('Re-deploy Kubernetes Pod'){
       steps{
         withCredentials([
-          credentialsID: 'jenkins-farminsight-kubernetes-token',
+          string(credentialsID: 'jenkins-farminsight-kubernetes-token',
           variable: 'TOKEN'
-        ]) {
+)        ]) {
             sh '''
              kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight get pods
              kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight delete pods -l=app=farminsight-dashboard-backend
