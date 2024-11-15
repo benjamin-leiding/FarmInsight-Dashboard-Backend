@@ -37,7 +37,7 @@ pipeline {
     stage('Re-deploy Kubernetes Pod'){
       steps{
         withKubeConfig([
-          credentialsID: 'jenkins-kubernetes-token',
+          credentialsID: 'jenkins-farminsight-kubernetes-token',
           namespace: 'farminsight',
           serverURL: 'https://digit-25-222.digit.tu-clausthal.de:6443'
         ]) {
