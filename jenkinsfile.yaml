@@ -2,7 +2,6 @@ pipeline {
   environment {
     dockerregistry = "https://registry.etce.isse.tu-clausthal.de"
     dockerregistrycredential = "docker-registry-private"
-    kubernetes-token = "jenkins-farminsight-kubernetes-token"
     dockerimagename = "registry.etce.isse.tu-clausthal.de/etce-lab/farminsight-dashboard-backend:latest"
     dockerImage = ""
   }
