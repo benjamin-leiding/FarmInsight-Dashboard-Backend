@@ -39,7 +39,9 @@ pipeline {
       steps{
         withCredentials([
           string(credentialsID: 'jenkins-farminsight-kubernetes-token',
-                 variable: 'TOKEN'
+                 variable: 'TOKEN',
+                 usernameVariable: 'username',
+                 passwordVariable: 'password'
           )
         ]) {
             sh '''
