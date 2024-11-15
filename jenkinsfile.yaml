@@ -4,7 +4,8 @@ pipeline {
     dockerregistrycredential = "docker-registry-private"
     dockerimagename = "registry.etce.isse.tu-clausthal.de/etce-lab/farminsight-dashboard-backend:latest"
     dockerImage = ""
-    TOKEN = ""
+    TOKEN = credentials('jenkins-farminsight-kubernetes-token')
+    KUBERNETES_SERVER = credentials('kubernetes-server-api-url')
   }
   agent any
   stages {
@@ -37,20 +38,13 @@ pipeline {
     }
     stage('Re-deploy Kubernetes Pod'){
       steps{
-        withCredentials([
-          string(credentialsID: 'jenkins-farminsight-kubernetes-tokenn',
-                 variable: 'TOKEN',
-                 usernameVariable: 'username',
-                 passwordVariable: 'password'
-          )
-        ]) {
             sh '''
-             kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight get pods
-             kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight delete pods -l=app=farminsight-dashboard-backend
-             kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight apply -f deployment.yaml
-             kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight apply -f service.yaml
+             kubectl --token=${TOKEN} --server="${KUBERNETES_SERVER}" --insecure-skip-tls-verify -n farminsight get pods
+             kubectl --token=${TOKEN} --server="${KUBERNETES_SERVER}" --insecure-skip-tls-verify -n farminsight delete pods -l=app=farminsight-dashboard-backend
+             kubectl --token=${TOKEN} --server="${KUBERNETES_SERVER}" --insecure-skip-tls-verify -n farminsight apply -f deployment.yaml
+             kubectl --token=${TOKEN} --server="${KUBERNETES_SERVER}" --insecure-skip-tls-verify -n farminsight apply -f service.yaml
             '''
-       }}
+       }
+}
     }
   }
-}
