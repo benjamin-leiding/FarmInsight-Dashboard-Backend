@@ -1,5 +1,4 @@
 from farminsight_dashboard_backend.serializers import FPFSerializer
-from farminsight_dashboard_backend.services import InfluxDBManager
 
 
 def create_fpf(data) -> FPFSerializer:
@@ -9,6 +8,7 @@ def create_fpf(data) -> FPFSerializer:
     :param data:
     :return:
     """
+    from farminsight_dashboard_backend.services import InfluxDBManager
     serializer = FPFSerializer(data=data, partial=True)
     if serializer.is_valid(raise_exception=True):
         serializer.save()
