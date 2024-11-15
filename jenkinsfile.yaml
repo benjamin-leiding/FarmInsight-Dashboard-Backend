@@ -4,6 +4,7 @@ pipeline {
     dockerregistrycredential = "docker-registry-private"
     dockerimagename = "registry.etce.isse.tu-clausthal.de/etce-lab/farminsight-dashboard-backend:latest"
     dockerImage = ""
+    TOKEN = ""
   }
   agent any
   stages {
@@ -38,8 +39,9 @@ pipeline {
       steps{
         withCredentials([
           string(credentialsID: 'jenkins-farminsight-kubernetes-token',
-          variable: 'TOKEN'
-)        ]) {
+                 variable: 'TOKEN'
+          )
+        ]) {
             sh '''
              kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight get pods
              kubectl --token="$TOKEN" --server="https://digit-25-222.digit.tu-clausthal.de:6443/" -n farminsight delete pods -l=app=farminsight-dashboard-backend
