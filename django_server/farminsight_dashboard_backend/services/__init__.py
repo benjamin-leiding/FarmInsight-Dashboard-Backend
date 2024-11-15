@@ -5,3 +5,4 @@ from .membership_services import create_membership, get_memberships, update_memb
 from .userprofile_services import search_userprofiles
 from .data_services import get_all_fpf_data, get_all_sensor_data
 from .influx_services import InfluxDBManager
+from .sensor_services import get_sensor, update_sensor, create_sensor, get_sensor_types_from_fpf
