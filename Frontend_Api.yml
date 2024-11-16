@@ -744,14 +744,12 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                fpfId:
-                  description: ID of FPF that the Growing cycle belongs to
-                  type: string
-                  format: uuid
-                growingCycle:
-                  $ref: '#/components/schemas/GrowingCycle'
+              allOf:
+                - $ref: '#/components/schemas/GrowingCycle'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
         required: true
       responses:
         '200':
@@ -1295,14 +1293,6 @@ components:
           type: boolean
         intervalSeconds:
           type: integer
-    CameraTK:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
     Sensor:
       type: object
       properties:
@@ -1325,18 +1315,13 @@ components:
           type: boolean
         intervalSeconds:
           type: integer
-    SensorTK:
+    GrowingCycle:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        name:
-          type: string
-    GrowingCycle:
-      type: object
-      properties:
-        id:
+        fpfId:
           type: string
           format: uuid
         startDate:
