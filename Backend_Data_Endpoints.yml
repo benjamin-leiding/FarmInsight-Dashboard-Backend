@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Swagger Farminsight Backend - Data Communication - OpenAPI 3.0
+  title: Swagger Farminsight Backend - FPF Communication - OpenAPI 3.0
   description: |-
     Description TODO
   termsOfService: TOS
@@ -18,7 +18,27 @@ servers:
 tags:
   - name: data
     description: Data and Image upload Endpoints
+  - name: auth
 paths:
+  /fpfs/{fpfId}/apiKey:
+    get:
+      tags:
+        - auth
+      summary: Requests that the FPF gets send a new API-Key
+      operationId: getFPFApiKey
+      parameters:
+        - name: fpfId
+          in: path
+          description: ID of FPF that the API-Key should get sent to
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: FPF not found
   /measurement:
     post:
       tags:

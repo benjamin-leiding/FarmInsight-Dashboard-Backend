@@ -16,51 +16,71 @@ externalDocs:
 servers:
   - url: https://anants-pi-cluster.de/api
 tags:
+  - name: auth
   - name: sensor
   - name: camera
 paths:
-  /sensors/synchronize:
+  /apiKeys:
+    post:
+      tags:
+        - auth
+      summary: Sends the FPF Backend it's id and current API-Key
+      operationId: postApiKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fpfId:
+                  type: string
+                  format: uuid
+                apiKey:
+                  type: string
+      responses:
+        '201':
+          description: Successful operation
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
+  /sensors:
     post:
       tags:
         - sensor
-      summary: Upload sensor configuration for synchronization
+      summary: Add new Sensor
       operationId: postSensorConfiguration
       requestBody:
-        description: Array of Sensors
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Sensor'
+              $ref: '#/components/schemas/Sensor'
       responses:
-        '200':
+        '201':
           description: Successful operation
         '403':
           description: Forbidden
         '422':
           description: Validation exception
-  /sensors/measurementInterval:
-    post:
+  /sensors/{sensorId}:
+    put:
       tags:
         - sensor
-      summary: Upload new sensor interval
-      description: Uploads new measurement interval of Sensor
-      operationId: postSensorInterval
+      summary: Update existing Sensor
+      operationId: putSensorConfiguration
+      parameters:
+        - name: sensorId
+          in: path
+          description: ID of Sensor to Update
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
-        description: Sensor measurement interval in seconds
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                sensorId:
-                  description: ID of Sensor that the Interval belong to
-                  type: string
-                  format: uuid
-                intervalInSeconds:
-                  description: Interval in which Sensor Measurements should be taken
-                  type: integer
+              $ref: '#/components/schemas/SensorWoId'
       responses:
         '200':
           description: Successful operation
@@ -68,48 +88,43 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /cameras/synchronize:
+  /cameras:
     post:
       tags:
         - camera
-      summary: Upload Camera configuration for synchronization
+      summary: Upload Camera configuration 
       operationId: postCameraConfiguration
       requestBody:
-        description: Array of Cameras
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Camera'
+              $ref: '#/components/schemas/Camera'
       responses:
-        '200':
+        '201':
           description: Successful operation
         '403':
           description: Forbidden
         '422':
           description: Validation exception
-  /cameras/imageInterval:
-    post:
+  /cameras/{cameraId}:
+    put:
       tags:
         - camera
-      summary: Upload new camera interval
-      description: Uploads image interval of Camera
-      operationId: postCameraInterval
+      summary: Update existing Camera
+      operationId: putCameraConfiguration
+      parameters:
+        - name: cameraId
+          in: path
+          description: ID of Camera to Update
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
-        description: Camera image interval in seconds
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                cameraId:
-                  description: ID of Camera that the Interval belong to
-                  type: string
-                  format: uuid
-                intervalInSeconds:
-                  description: Interval in which Camera images should be sent to Backend
-                  type: integer
+              $ref: '#/components/schemas/CameraWoId'
       responses:
         '200':
           description: Successful operation
@@ -117,7 +132,7 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /cameras/stream/{cameraId}:
+  /cameras/{cameraId}/stream:
     get:
       tags:
         - camera
@@ -145,37 +160,35 @@ components:
         id:
           type: string
           format: uuid
-        name:
-          type: string
-        location:
-          type: string
-        unit:
-          type: string
-          enum:
-            - °C
-            - °F
-            - kg
-        modelNr:
-          type: string
-        isActive:
-          type: boolean
         intervalSeconds:
           type: integer
+        connectionType:
+          type: string
+        additionalInformation:
+          type: object
+    SensorWoId:
+      type: object
+      properties:
+        intervalSeconds:
+          type: integer
+        connectionType:
+          type: string
+        additionalInformation:
+          type: object
     Camera:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        name:
-          type: string
-        location:
-          type: string
-        modelNr:
-          type: string
         resolution:
           type: string
-        isActive:
-          type: boolean
+        intervalSeconds:
+          type: integer
+    CameraWoId:
+      type: object
+      properties:
+        resolution:
+          type: string
         intervalSeconds:
           type: integer
