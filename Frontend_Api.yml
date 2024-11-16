@@ -34,64 +34,6 @@ tags:
     description: FPF, Sensor and Camera data retrieveal
 paths:
   /fpfs:
-    put:
-      tags:
-        - fpf
-      summary: Update an existing FPF
-      description: Update an existing FPF
-      operationId: updateFPF
-      requestBody:
-        description: Update an existent FPF
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                name:
-                  type: string
-                isPublic:
-                  type: boolean
-                sensorServiceIp:
-                  type: string
-                  format: ipv4
-                cameraServiceIp:
-                  type: string
-                  format: ipv4
-                adress:
-                  type: string
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  name:
-                    type: string
-                  isPublic:
-                    type: boolean
-                  sensorServiceIp:
-                    type: string
-                    format: ipv4
-                  cameraServiceIp:
-                    type: string
-                    format: ipv4
-                  adress:
-                    type: string
-        '403':
-          description: Forbidden
-        '404':
-          description: FPF not found
-        '422':
-          description: Validation exception
     post:
       tags:
         - fpf
@@ -209,6 +151,69 @@ paths:
           description: Forbidden
         '404':
           description: FPF not found
+    put:
+      tags:
+        - fpf
+      summary: Update an existing FPF
+      description: Update an existing FPF
+      operationId: updateFPF
+      parameters:
+        - name: fpfId
+          in: path
+          description: ID of FPF to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existent FPF
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                isPublic:
+                  type: boolean
+                sensorServiceIp:
+                  type: string
+                  format: ipv4
+                cameraServiceIp:
+                  type: string
+                  format: ipv4
+                adress:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+                  sensorServiceIp:
+                    type: string
+                    format: ipv4
+                  cameraServiceIp:
+                    type: string
+                    format: ipv4
+                  adress:
+                    type: string
+        '403':
+          description: Forbidden
+        '404':
+          description: FPF not found
+        '422':
+          description: Validation exception
     delete:
       tags:
         - fpf
@@ -279,48 +284,6 @@ paths:
                     organization:
                       $ref: '#/components/schemas/OrganizationTK'
   /organizations:
-    put:
-      tags:
-        - organization
-      summary: Update an existing Organization
-      description: Update an existing Organization
-      operationId: updateOrganization
-      requestBody:
-        description: Update an existent Organization
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                name:
-                  type: string
-                isPublic:
-                  type: boolean
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  name:
-                    type: string
-                  isPublic:
-                    type: boolean
-        '403':
-          description: Forbidden
-        '404':
-          description: Organization not found
-        '422':
-          description: Validation exception
     post:
       tags:
         - organization
@@ -357,7 +320,7 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /organizations/{organizationIdentifier}:
+  /organizations/{organizationId}:
     get:
       tags:
         - organization
@@ -365,9 +328,9 @@ paths:
       description: Returns a single Organization
       operationId: getOrganizationByIdent
       parameters:
-        - name: organizationIdentifier
+        - name: organizationId
           in: path
-          description: ID or Name of Organization to return
+          description: ID of Organization to return
           required: true
           schema:
             type: string
@@ -383,6 +346,53 @@ paths:
           description: Forbidden
         '404':
           description: Organization not found
+    put:
+      tags:
+        - organization
+      summary: Update an existing Organization
+      description: Update an existing Organization
+      operationId: updateOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          description: ID of Organization to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existent Organization
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                isPublic:
+                  type: boolean
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
+                  isPublic:
+                    type: boolean
+        '403':
+          description: Forbidden
+        '404':
+          description: Organization not found
+        '422':
+          description: Validation exception
     delete:
       tags:
         - organization
@@ -390,7 +400,7 @@ paths:
       description: delete Organization
       operationId: deleteOrganization
       parameters:
-        - name: organizationIdentifier
+        - name: organizationId
           in: path
           description: Organization id to delete
           required: true
@@ -458,32 +468,6 @@ paths:
                             - admin
                             - member
   /cameras:
-    put:
-      tags:
-        - camera
-      summary: Update an existing Camera
-      description: Update an existing Camera by Id
-      operationId: updateCamera
-      requestBody:
-        description: Update an existing Camera
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Camera'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Camera'
-        '403':
-          description: Forbidden
-        '404':
-          description: Camera not found
-        '422':
-          description: Validation exception
     post:
       tags:
         - camera
@@ -541,6 +525,45 @@ paths:
           description: Forbidden
         '404':
           description: Camera not found
+    put:
+      tags:
+        - camera
+      summary: Update an existing Camera
+      description: Update an existing Camera by Id
+      operationId: updateCamera
+      parameters:
+        - name: cameraId
+          in: path
+          description: Camera id to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existing Camera
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Camera'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camera'
+        '403':
+          description: Forbidden
+        '404':
+          description: Camera not found
+        '422':
+          description: Validation exception
     delete:
       tags:
         - camera
@@ -561,32 +584,6 @@ paths:
         '404':
           description: Camera not found
   /sensors:
-    put:
-      tags:
-        - sensor
-      summary: Update an existing Sensor
-      description: Update an existing Sensor by Id
-      operationId: updateSensor
-      requestBody:
-        description: Update an existing Sensor
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Sensor'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Sensor'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Sensor not found
-        '422':
-          description: Validation exception
     post:
       tags:
         - sensor
@@ -604,8 +601,12 @@ paths:
                   description: ID of FPF that the Sensor belongs to
                   type: string
                   format: uuid
-                sensor:
-                  $ref: '#/components/schemas/Sensor'
+              allOf:
+                - $ref: '#/components/schemas/Sensor'
+                - type: object
+                  properties:
+                    connection:
+                      $ref: '#/components/schemas/SensorConnection'
         required: true
       responses:
         '200':
@@ -613,7 +614,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Sensor'
+                allOf:
+                  - $ref: '#/components/schemas/Sensor'
+                  - type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/SensorConnection'
         '403':
           description: Forbidden
         '422':
@@ -639,24 +645,43 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Sensor'
+                allOf:
+                  - $ref: '#/components/schemas/Sensor'
+                  - type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/SensorConnection'
         '403':
           description: Forbidden
         '404':
           description: Sensor not found
-  /growingCycles:
     put:
       tags:
-        - cycle
-      summary: Update an existing GrowingCycle
-      description: Update an existing GrowingCycle by Id
-      operationId: updateGrowingCycle
+        - sensor
+      summary: Update an existing Sensor
+      description: Update an existing Sensor by Id
+      operationId: updateSensor
+      parameters:
+        - name: sensorId
+          in: path
+          description: ID of Sensor to update
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
-        description: Update an existing GrowingCycle
+        description: Update an existing Sensor
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/GrowingCycle'
+              allOf:
+                - $ref: '#/components/schemas/Sensor'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
+                    connection:
+                      $ref: '#/components/schemas/SensorConnection'
         required: true
       responses:
         '200':
@@ -664,13 +689,50 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GrowingCycle'
-        '403':
-          description: Forbidden
+                allOf:
+                  - $ref: '#/components/schemas/Sensor'
+                  - type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/SensorConnection'
+        '400':
+          description: Invalid ID supplied
         '404':
-          description: GrowingCycle not found
+          description: Sensor not found
         '422':
           description: Validation exception
+  /sensors/types/available/{fpfId}:
+    get:
+      tags:
+        - sensor
+      summary: Available Sensor connection types of the FPF
+      description: Get all available Sensor connection types of the FPF
+      operationId: getSensorConnections
+      parameters:
+        - name: fpfId
+          in: path
+          description: ID of FPF's sensor connections to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Sensor'
+                  - type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/SensorConnection'
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
+  /growingCycles:
     post:
       tags:
         - cycle
@@ -728,6 +790,45 @@ paths:
           description: Forbidden
         '404':
           description: GrowingCycle not found
+    put:
+      tags:
+        - cycle
+      summary: Update an existing GrowingCycle
+      description: Update an existing GrowingCycle by Id
+      operationId: updateGrowingCycle
+      parameters:
+        - name: growingCycleId
+          in: path
+          description: GrowingCycle id to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existing GrowingCycle
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/GrowingCycle'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GrowingCycle'
+        '403':
+          description: Forbidden
+        '404':
+          description: GrowingCycle not found
+        '422':
+          description: Validation exception
     delete:
       tags:
         - cycle
@@ -748,32 +849,6 @@ paths:
         '404':
           description: GrowingCycle not found
   /userprofiles:
-    put:
-      tags:
-        - userprofile
-      summary: Update an existing Userprofile
-      description: Update an existing Userprofile by Id
-      operationId: updateUserprofile
-      requestBody:
-        description: Update an existing Userprofile
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Userprofile'
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Userprofile'
-        '400':
-          description: Invalid ID supplied
-        '403':
-          description: Forbidden
-        '422':
-          description: Validation exception
     get:
       tags:
         - userprofile
@@ -810,11 +885,50 @@ paths:
             application/json:
               schema:
                 type: array
-                items: 
+                items:
                   $ref: '#/components/schemas/Userprofile'
         '403':
           description: Forbidden
   /userprofiles/{userprofileId}:
+    put:
+      tags:
+        - userprofile
+      summary: Update an existing Userprofile
+      description: Update an existing Userprofile by Id
+      operationId: updateUserprofile
+      parameters:
+        - name: userprofileId
+          in: path
+          description: Userprofile id to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existing Userprofile
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Userprofile'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Userprofile'
+        '400':
+          description: Invalid ID supplied
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
     delete:
       tags:
         - userprofile
@@ -835,48 +949,6 @@ paths:
         '403':
           description: Forbidden
   /memberships:
-    put:
-      tags:
-        - membership
-      summary: Update an existing Membership
-      description: Update an existing Membership by Id
-      operationId: updateMembership
-      requestBody:
-        description: Update an existing Membership
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: string
-                  format: uuid
-                membershipRole:
-                  type: string
-                  enum:
-                    - admin
-                    - member
-        required: true
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uuid
-                  membershipRole:
-                    type: string
-                    enum:
-                      - admin
-                      - member
-        '403':
-          description: Forbidden
-        '422':
-          description: Validation exception
     post:
       tags:
         - membership
@@ -930,6 +1002,53 @@ paths:
         '422':
           description: Validation exception
   /memberships/{membershipId}:
+    put:
+      tags:
+        - membership
+      summary: Update an existing Membership
+      description: Update an existing Membership by Id
+      operationId: updateMembership
+      parameters:
+        - name: membershipId
+          in: path
+          description: Membership id to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existing Membership
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                membershipRole:
+                  type: string
+                  enum:
+                    - admin
+                    - member
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  membershipRole:
+                    type: string
+                    enum:
+                      - admin
+                      - member
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
     delete:
       tags:
         - membership
@@ -1137,7 +1256,7 @@ components:
                 description: the date-time notation as defined by RFC 3339, section 5.6
                 example: 2017-07-21T17:32:28Z
               userprofile:
-                  $ref: '#/components/schemas/UserprofileTK'
+                $ref: '#/components/schemas/UserprofileTK'
         FPFs:
           type: array
           items:
@@ -1319,6 +1438,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Image'
+    SensorConnection:
+      type: object
+      properties:
+        connectionType:
+          type: string
+        additionalInformation:
+          type: object
     Image:
       type: object
       properties:
