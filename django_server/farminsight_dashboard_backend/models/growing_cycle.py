@@ -10,4 +10,4 @@ class GrowingCycle(models.Model):
     endDate = models.DateTimeField(default=timezone.now)
     plants = models.CharField(max_length=256)
     note = models.CharField(max_length=256)
-    FPF = models.ForeignKey(FPF, on_delete=models.CASCADE)
+    FPF = models.ForeignKey(FPF, related_name='growingCycles', on_delete=models.CASCADE)

@@ -1,12 +1,12 @@
 import uuid
-from enum import Enum
 from django.db import models
 from django.utils import timezone
 from .userprofile import Userprofile
 from .organization import Organization
+from farminsight_dashboard_backend.utils import ListableEnum
 
 
-class MembershipRole(Enum):
+class MembershipRole(ListableEnum):
     Admin = 'admin'
     Member = 'member'
 

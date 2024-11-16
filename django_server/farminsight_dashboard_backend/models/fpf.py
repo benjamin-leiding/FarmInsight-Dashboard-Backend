@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from .organization import Organization
+from farminsight_dashboard_backend.utils import generate_random_api_key
 
 
 class FPF(models.Model):
@@ -11,3 +12,11 @@ class FPF(models.Model):
     cameraServiceIp = models.GenericIPAddressField()
     address = models.CharField(max_length=256)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    apiKey = models.CharField(max_length=64, default=generate_random_api_key)
+    apiKeyValidUntil = models.DateTimeField(null=True, blank=True)
+    createdAt = models.DateTimeField(auto_now_add=True, null=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['organization', 'name'], name='unique_name_per_organization')
+        ]
