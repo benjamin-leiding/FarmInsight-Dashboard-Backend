@@ -732,7 +732,7 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /growingCycles:
+  /growing-cycles:
     post:
       tags:
         - cycle
@@ -762,7 +762,7 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /growingCycles/{growingCycleId}:
+  /growing-cycles/{growingCycleId}:
     get:
       tags:
         - cycle
