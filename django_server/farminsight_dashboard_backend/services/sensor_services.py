@@ -1,58 +1,51 @@
-from django.contrib.sites import requests
-from requests import RequestException
-
 from farminsight_dashboard_backend.exceptions import NotFoundException
-from farminsight_dashboard_backend.models import FPF
+from farminsight_dashboard_backend.models import FPF, Sensor
 from farminsight_dashboard_backend.serializers.sensor_serializer import SensorSerializer
 
 
-def get_sensor_types_from_fpf(fpf_id):
+def get_sensor(sensor_id) -> Sensor:
     """
-    Forward the request to the FPF and return the response body
-    :param fpf_id:
+    Return the sensor by given id populated with additional technical information by the FPF.
+    :param sensor_id:
     :return:
     """
     try:
-        fpf = FPF.objects.get(id=fpf_id)
-    except FPF.DoesNotExist:
-        raise NotFoundException(f'Membership {fpf_id} not found.')
+        sensor = Sensor.objects.get(id=sensor_id)
+    except Sensor.DoesNotExist:
+        raise NotFoundException(f'Sensor {sensor_id} not found.')
 
-    url = f"{fpf.sensorServiceIp}/api/sensors/types/available"
+    return sensor
 
+
+def update_sensor(sensor_id, new_sensor):
+    """
+    Update the sensor by sensor id and a new sensor object
+    :param sensor_id:
+    :param new_sensor:
+    :return:
+    """
     try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
+        sensor = Sensor.objects.get(id=sensor_id)
+    except Sensor.DoesNotExist:
+        raise NotFoundException(f"Sensor {sensor_id} not found.")
 
-    except RequestException as e:
-        raise Exception(f"Cannot reach FPF sensor service at {url}: {str(e)}")
+    serializer = SensorSerializer(sensor, data=new_sensor, partial=True)
 
-    try:
-        data = response.json()
+    if serializer.is_valid(raise_exception=True):
+        serializer.save()
 
-    except ValueError:
-        raise Exception("Invalid JSON response from FPF sensor service.")
+    return serializer.data
 
-    return data
-
-def get_sensor():
-    return
-
-def update_sensor():
-    return
 
 def create_sensor(fpf_id, sensor):
     """
+    Send the sensor information to the fpf. On success, create the sensor config in the database
     Create a new Sensor in the database
     :return:
     """
-    try:
-        fpf = FPF.objects.get(id=fpf_id)
-    except FPF.DoesNotExist:
-        raise NotFoundException(f'FPF with id: {fpf_id} was not found.')
-
     serializer = SensorSerializer(data=sensor, partial=True)
     if serializer.is_valid(raise_exception=True):
-        sensor["fpf_id"] = fpf.id
+        sensor["fpf_id"] = fpf_id
         serializer.save()
 
     return sensor

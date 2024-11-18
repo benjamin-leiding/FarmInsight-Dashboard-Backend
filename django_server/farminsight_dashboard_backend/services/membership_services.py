@@ -12,8 +12,8 @@ def get_memberships(user: Userprofile) -> QuerySet[Membership]:
 
 def create_membership(creating_user: Userprofile, data: dict) -> MembershipSerializer:
     # Check that the one adding a Member is an Admin of the Organization, or System Admin of the Backend
-    memberships = get_memberships(creating_user)\
-        .filter(organization_id=data['organizationId'], membershipRole=MembershipRole.Admin.value)\
+    memberships = get_memberships(creating_user) \
+        .filter(organization_id=data['organizationId'], membershipRole=MembershipRole.Admin.value) \
         .all()
 
     if len(memberships) > 0 or creating_user.systemRole == SystemRole.SystemAdmin.value:
@@ -71,3 +71,10 @@ def remove_membership(membership_id, creating_user):
         membership.delete()
         return
     raise PermissionDenied()
+
+
+def is_member(user, organization_id):
+    memberships = get_memberships(user)
+    if organization_id not in memberships:
+        return False
+    return True
