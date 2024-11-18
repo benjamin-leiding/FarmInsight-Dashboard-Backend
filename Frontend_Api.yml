@@ -605,6 +605,8 @@ paths:
                 - $ref: '#/components/schemas/Sensor'
                 - type: object
                   properties:
+                    id:
+                      readOnly: true
                     connection:
                       $ref: '#/components/schemas/SensorConnection'
         required: true
