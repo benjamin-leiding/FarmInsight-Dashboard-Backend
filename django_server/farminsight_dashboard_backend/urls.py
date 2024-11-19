@@ -2,6 +2,7 @@ from django.urls import path
 
 from farminsight_dashboard_backend.views import (
     UserprofileView,
+    get_userprofile,
     get_own_organizations,
     post_membership,
     MeasurementView,
@@ -11,11 +12,8 @@ from farminsight_dashboard_backend.views import (
     get_sensor_data, get_organization
 )
 
-
-
-
 urlpatterns = [
-    path('userprofiles',  UserprofileView.as_view(), name='get_userprofile'),
+    path('userprofiles',  get_userprofile, name='get_userprofile'),
     path('userprofiles/<str:identifier>', UserprofileView.as_view(), name='userprofile_operations'),
     path('organizations/own', get_own_organizations, name='get_own_organizations'),
     path('organizations', post_organization, name='post_organization'),
