@@ -13,8 +13,8 @@ from farminsight_dashboard_backend.views import (
 )
 
 urlpatterns = [
-    path('userprofiles/own',  get_userprofile, name='get_userprofile'),
-    path('userprofiles', UserprofileView.as_view(), name='get_userprofile'),
+    path('userprofiles', get_userprofile, name='get_userprofile'),
+    path('userprofiles/<str:identifier>', UserprofileView.as_view(), name='get_userprofile'),
     path('userprofiles/<str:identifier>', UserprofileView.as_view(), name='userprofile_operations'),
     path('organizations/own', get_own_organizations, name='get_own_organizations'),
     path('organizations', post_organization, name='post_organization'),

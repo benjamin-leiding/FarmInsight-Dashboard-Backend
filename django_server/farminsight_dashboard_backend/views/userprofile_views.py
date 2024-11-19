@@ -11,17 +11,16 @@ from rest_framework.decorators import api_view, permission_classes
 class UserprofileView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, identifier):
         """
         Search userprofile by string (name or email)
         Exclude userprofiles of an organization optionally with query param exclude_organization_id.
+        :param identifier: Name or email to be searched for
         :param request:
         :return:
         """
-        search_string = request.query_params.get("search_string", "")
         exclude_organization_id = request.query_params.get("exclude_organization_id", None)
-
-        userprofiles = search_userprofiles(search_string)
+        userprofiles = search_userprofiles(identifier)
 
         if exclude_organization_id:
             memberships_to_exclude = get_memberships_by_organization(exclude_organization_id)
