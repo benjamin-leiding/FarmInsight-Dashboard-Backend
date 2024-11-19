@@ -1,4 +1,4 @@
-from .userprofile_views import get_userprofile, get_userprofile_by_search_string
+from .userprofile_views import UserprofileView, get_userprofile
 from .organization_views import post_organization, get_own_organizations, get_organization
 from .fpf_views import post_fpf
 from .measurement_views import MeasurementView

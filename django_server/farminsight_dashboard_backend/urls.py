@@ -1,21 +1,20 @@
 from django.urls import path
 
 from farminsight_dashboard_backend.views import (
-    get_userprofile_by_search_string,
+    UserprofileView,
+    get_userprofile,
     get_own_organizations,
     post_membership,
     MeasurementView,
-    get_userprofile,
     post_organization,
     post_fpf,
     get_fpf_data,
     get_sensor_data, get_organization
 )
 
-
 urlpatterns = [
-    path('userprofiles', get_userprofile, name='get_userprofile'),
-    path('userprofiles/<str:search_string>', get_userprofile_by_search_string, name='get_userprofile_by_search_string'),
+    path('userprofiles',  get_userprofile, name='get_userprofile'),
+    path('userprofiles/<str:identifier>', UserprofileView.as_view(), name='userprofile_operations'),
     path('organizations/own', get_own_organizations, name='get_own_organizations'),
     path('organizations', post_organization, name='post_organization'),
     path('organizations/<str:organization_identifier>', get_organization, name='get_organization'),
