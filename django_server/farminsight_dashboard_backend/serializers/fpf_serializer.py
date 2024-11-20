@@ -26,7 +26,7 @@ class FPFSerializer(serializers.ModelSerializer):
 class FPFTechnicalKeySerializer(serializers.ModelSerializer):
     class Meta:
         model = FPF
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'isPublic']
 
 
 class FPFFullSerializer(serializers.ModelSerializer):
