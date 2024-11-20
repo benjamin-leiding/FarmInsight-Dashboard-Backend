@@ -22,3 +22,6 @@ def create_membership(creating_user: Userprofile, data: dict) -> MembershipSeria
 
         return membership_serializer
     raise PermissionDenied()
+
+def get_memberships_by_organization(organization_id):
+    return Membership.objects.filter(organization_id=organization_id)
