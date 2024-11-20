@@ -1,4 +1,4 @@
-from .fpf_services import create_fpf
+from .fpf_services import create_fpf, get_fpf_by_id
 from .organization_services import create_organization, get_organization_by_name, get_organization_by_id
 from .measurement_services import store_measurements_in_influx
 from .membership_services import create_membership, get_memberships

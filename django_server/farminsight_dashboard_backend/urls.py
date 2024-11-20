@@ -7,10 +7,10 @@ from farminsight_dashboard_backend.views import (
     post_membership,
     MeasurementView,
     post_organization,
-    post_fpf,
     get_fpf_data,
     get_sensor_data, get_organization
 )
+from farminsight_dashboard_backend.views.fpf_views import FpfView
 
 urlpatterns = [
     path('userprofiles',  get_userprofile, name='get_userprofile'),
@@ -19,7 +19,8 @@ urlpatterns = [
     path('organizations', post_organization, name='post_organization'),
     path('organizations/<str:organization_identifier>', get_organization, name='get_organization'),
     path('memberships', post_membership, name='post_membership'),
-    path('fpfs', post_fpf, name='post_fpf'),
+    path('fpfs', FpfView.as_view(), name='post_fpf'),
+    path('fpfs/<str:fpf_id>', FpfView.as_view(), name='fpf_operations'),
     path('fpfs/<str:fpf_id>/data', get_fpf_data, name='get_fpf_data'),
     path('sensors/<str:sensor_id>/measurements', get_sensor_data, name='get_sensor_data'),
     path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements')
