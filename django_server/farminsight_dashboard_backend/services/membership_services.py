@@ -78,3 +78,7 @@ def is_member(user, organization_id):
     if organization_id not in memberships:
         return False
     return True
+  
+  
+def get_memberships_by_organization(organization_id):
+    return Membership.objects.filter(organization_id=organization_id)
