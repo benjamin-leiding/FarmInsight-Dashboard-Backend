@@ -14,15 +14,11 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     :return: JSON response data
     """
     fpf = get_fpf_by_id(fpf_id)
-    print(fpf)
-    print(data)
     url = f"{build_fpf_url(fpf.get('sensorServiceIp'), endpoint)}"
-    print(url)
     try:
         response = requests.request(method, url, json=data, params=params, timeout=10)
-        #response.raise_for_status()
-        #print(response.json())
-        return response
+        response.raise_for_status()
+        return response.json()
 
     except RequestException as e:
         raise Exception(f"Cannot reach the FPF service at {url}: {str(e)}")

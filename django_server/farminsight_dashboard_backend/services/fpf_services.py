@@ -8,8 +8,9 @@ from django.utils import timezone
 
 def create_fpf(data) -> FPFSerializer:
     """
-    Create the FPF in the database and
-    create a new bucket in the influxdb
+    First, save fpf to database and create a new bucket in the influxdb.
+    Try to send a new apiKey to the FPF.
+    Try to send
     :param data:
     :return:
     """
@@ -18,8 +19,8 @@ def create_fpf(data) -> FPFSerializer:
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         InfluxDBManager.get_instance().sync_fpf_buckets()
-
-    return serializer
+        update_fpf_api_key(serializer.data.get('id'))
+    return serializer.data
 
 
 def get_fpf_by_id(fpf_id):
