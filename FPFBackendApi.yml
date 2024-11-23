@@ -1,3 +1,4 @@
+
 openapi: 3.0.3
 info:
   title: Swagger Farminsight FPF Backend - OpenAPI 3.0
@@ -58,11 +59,39 @@ paths:
       responses:
         '201':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
         '403':
           description: Forbidden
         '422':
           description: Validation exception
   /sensors/{sensorId}:
+    get:
+      tags:
+        - sensor
+      summary: get existing Sensor
+      operationId: getSensorConfiguration
+      parameters:
+        - name: sensorId
+          in: path
+          description: ID of Sensor to return
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
     put:
       tags:
         - sensor
@@ -80,10 +109,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SensorWoId'
+              allOf:
+                - $ref: '#/components/schemas/Sensor'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
       responses:
         '200':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sensor'
         '403':
           description: Forbidden
         '422':
@@ -102,6 +140,10 @@ paths:
       responses:
         '201':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camera'
         '403':
           description: Forbidden
         '422':
@@ -124,10 +166,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CameraWoId'
+              allOf:
+                - $ref: '#/components/schemas/Camera'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
       responses:
         '200':
           description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Camera'
         '403':
           description: Forbidden
         '422':
@@ -166,28 +217,12 @@ components:
           type: string
         additionalInformation:
           type: object
-    SensorWoId:
-      type: object
-      properties:
-        intervalSeconds:
-          type: integer
-        connectionType:
-          type: string
-        additionalInformation:
-          type: object
     Camera:
       type: object
       properties:
         id:
           type: string
           format: uuid
-        resolution:
-          type: string
-        intervalSeconds:
-          type: integer
-    CameraWoId:
-      type: object
-      properties:
         resolution:
           type: string
         intervalSeconds:
