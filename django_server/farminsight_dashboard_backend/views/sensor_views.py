@@ -4,8 +4,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from farminsight_dashboard_backend.serializers import SensorSerializer
-from farminsight_dashboard_backend.services import create_sensor_at_fpf, get_memberships, get_organization_by_fpf_id, \
-    is_member, get_sensor_types_from_fpf, update_sensor_at_fpf, get_sensor_from_fpf
+from farminsight_dashboard_backend.services import get_organization_by_fpf_id, \
+    is_member, send_request_to_fpf
 from farminsight_dashboard_backend.services.sensor_services import get_sensor, create_sensor, \
     update_sensor
 from farminsight_dashboard_backend.utils import is_valid_uuid
@@ -32,7 +32,7 @@ class SensorView(APIView):
         if not is_member(request.user, get_organization_by_fpf_id(sensor.FPF_id).id):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        fpf_sensor_info = get_sensor_from_fpf(sensor.FPF_id, sensor_id)
+        fpf_sensor_info = send_request_to_fpf(sensor.FPF_id, 'get', f'/api/sensors/{sensor_id}')
 
         sensor_data = SensorSerializer(sensor).data
 
@@ -66,8 +66,7 @@ class SensorView(APIView):
         }
 
         try:
-            create_sensor_at_fpf(fpf_id, fpf_sensor_config)
-
+            send_request_to_fpf(fpf_id, 'post', '/api/sensors', fpf_sensor_config)
             sensor["id"] = str(new_uuid)
             create_sensor(fpf_id, sensor)
         except Exception:
@@ -98,7 +97,7 @@ class SensorView(APIView):
             "connectionType": data.get("connection", {}).get("connectionType"),
             "additionalInformation": data.get("connection", {}).get("additionalInformation", {})
         }
-        update_sensor_at_fpf(sensor_id, fpf_id, update_fpf_payload)
+        send_request_to_fpf(fpf_id, 'put', f'/api/sensors/{sensor_id}', update_fpf_payload)
 
         # Update sensor locally
         update_sensor_payload = {key: value for key, value in data.items() if key != "connection"}
@@ -119,7 +118,7 @@ def get_fpf_sensor_types(request, fpf_id):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     if is_valid_uuid(fpf_id):
-        sensor_types = get_sensor_types_from_fpf(fpf_id)
+        sensor_types = send_request_to_fpf(fpf_id, 'get', '/api/sensors/types/available')
         return Response(sensor_types, status=status.HTTP_200_OK)
 
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

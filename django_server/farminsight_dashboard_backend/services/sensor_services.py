@@ -1,5 +1,5 @@
 from farminsight_dashboard_backend.exceptions import NotFoundException
-from farminsight_dashboard_backend.models import FPF, Sensor
+from farminsight_dashboard_backend.models import Sensor
 from farminsight_dashboard_backend.serializers.sensor_serializer import SensorSerializer
 
 
