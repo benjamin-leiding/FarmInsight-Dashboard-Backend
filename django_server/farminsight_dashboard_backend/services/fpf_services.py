@@ -1,10 +1,10 @@
 from farminsight_dashboard_backend.exceptions import NotFoundException
 from farminsight_dashboard_backend.models import FPF
 from farminsight_dashboard_backend.serializers import FPFSerializer
-from farminsight_dashboard_backend.serializers.fpf_serializer import FPFFullSerializer
 from farminsight_dashboard_backend.utils import generate_random_api_key
 import datetime
 from django.utils import timezone
+
 
 def create_fpf(data) -> FPFSerializer:
     """
@@ -28,8 +28,7 @@ def get_fpf_by_id(fpf_id):
     if fpf is None:
         raise NotFoundException(f'FPF with id: {fpf_id} was not found.')
 
-    serializer = FPFFullSerializer(instance=fpf)
-    return serializer.data
+    return fpf
 
 
 def update_fpf_api_key(fpf_id):
@@ -47,4 +46,5 @@ def update_fpf_api_key(fpf_id):
     fpf.apiKeyValidUntil = timezone.now() + datetime.timedelta(days=30)
     fpf.save()
     return
+
 

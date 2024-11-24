@@ -75,7 +75,8 @@ def remove_membership(membership_id, creating_user):
 
 def is_member(user, organization_id):
     memberships = get_memberships(user)
-    if organization_id not in memberships:
+    organization_ids = memberships.values_list('organization_id', flat=True)
+    if organization_id not in organization_ids:
         return False
     return True
   

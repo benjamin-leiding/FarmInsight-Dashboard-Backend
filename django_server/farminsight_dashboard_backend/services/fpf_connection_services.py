@@ -14,7 +14,7 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     :return: JSON response data
     """
     fpf = get_fpf_by_id(fpf_id)
-    url = f"{build_fpf_url(fpf.get('sensorServiceIp'), endpoint)}"
+    url = f"{build_fpf_url(fpf.sensorServiceIp, endpoint)}"
     try:
         response = requests.request(method, url, json=data, params=params, timeout=10)
         response.raise_for_status()

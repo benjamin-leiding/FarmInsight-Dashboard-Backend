@@ -14,3 +14,12 @@ class SensorSerializer(serializers.ModelSerializer):
             'isActive',
             'intervalSeconds',
         ]
+
+
+class SensorDBSchemaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = '__all__'
+        extra_kwargs = {
+            'additional_fields': {'required': False}
+        }
