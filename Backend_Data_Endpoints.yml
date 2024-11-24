@@ -20,7 +20,7 @@ tags:
     description: Data and Image upload Endpoints
   - name: auth
 paths:
-  /fpfs/{fpfId}/apiKey:
+  /fpfs/{fpfId}/api-key:
     get:
       tags:
         - auth
@@ -39,7 +39,7 @@ paths:
           description: Successful operation
         '404':
           description: FPF not found
-  /measurement:
+  /measurements:
     post:
       tags:
         - data
@@ -69,7 +69,7 @@ paths:
           description: Sensor not found
         '422':
           description: Validation exception
-  /measurement/{sensorId}:
+  /measurements/{sensorId}:
     post:
       tags:
         - data
@@ -99,7 +99,7 @@ paths:
           description: Sensor not found
         '422':
           description: Validation exception
-  /image/{cameraId}:
+  /images/{cameraId}:
     post:
       tags:
         - data
