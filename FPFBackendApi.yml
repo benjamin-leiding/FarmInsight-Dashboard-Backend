@@ -25,8 +25,29 @@ paths:
     post:
       tags:
         - auth
-      summary: Sends the FPF Backend it's id and current API-Key
+      summary: Sends the FPF Backend it's API-Key
       operationId: postApiKey
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                apiKey:
+                  type: string
+      responses:
+        '200':
+          description: Successful operation
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
+  /fpfIds:
+    post:
+      tags:
+        - auth
+      summary: Sends the FPF Backend it's Id
+      operationId: postId
       requestBody:
         content:
           application/json:
@@ -36,10 +57,8 @@ paths:
                 fpfId:
                   type: string
                   format: uuid
-                apiKey:
-                  type: string
       responses:
-        '201':
+        '200':
           description: Successful operation
         '403':
           description: Forbidden
