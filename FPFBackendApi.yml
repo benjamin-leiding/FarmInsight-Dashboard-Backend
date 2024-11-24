@@ -21,7 +21,7 @@ tags:
   - name: sensor
   - name: camera
 paths:
-  /apiKeys:
+  /api-keys:
     post:
       tags:
         - auth
@@ -42,7 +42,7 @@ paths:
           description: Forbidden
         '422':
           description: Validation exception
-  /fpfIds:
+  /fpf-ids:
     post:
       tags:
         - auth
