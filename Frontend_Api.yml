@@ -607,7 +607,7 @@ paths:
                   properties:
                     id:
                       readOnly: true
-                    connection:
+                    hardwareConfiguration:
                       $ref: '#/components/schemas/SensorConnection'
         required: true
       responses:
@@ -620,7 +620,7 @@ paths:
                   - $ref: '#/components/schemas/Sensor'
                   - type: object
                     properties:
-                      connection:
+                      hardwareConfiguration:
                         $ref: '#/components/schemas/SensorConnection'
         '403':
           description: Forbidden
@@ -651,7 +651,7 @@ paths:
                   - $ref: '#/components/schemas/Sensor'
                   - type: object
                     properties:
-                      connection:
+                      hardwareConfiguration:
                         $ref: '#/components/schemas/SensorConnection'
         '403':
           description: Forbidden
@@ -682,7 +682,7 @@ paths:
                   properties:
                     id:
                       readOnly: true
-                    connection:
+                    hardwareConfiguration:
                       $ref: '#/components/schemas/SensorConnection'
         required: true
       responses:
@@ -695,7 +695,7 @@ paths:
                   - $ref: '#/components/schemas/Sensor'
                   - type: object
                     properties:
-                      connection:
+                      hardwareConfiguration:
                         $ref: '#/components/schemas/SensorConnection'
         '400':
           description: Invalid ID supplied
@@ -724,12 +724,9 @@ paths:
           content:
             application/json:
               schema:
-                allOf:
-                  - $ref: '#/components/schemas/Sensor'
-                  - type: object
-                    properties:
-                      connection:
-                        $ref: '#/components/schemas/SensorConnection'
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorDescription'
         '403':
           description: Forbidden
         '422':
@@ -1434,7 +1431,7 @@ components:
     SensorConnection:
       type: object
       properties:
-        connectionType:
+        sensorClassId:
           type: string
         additionalInformation:
           type: object
@@ -1449,6 +1446,34 @@ components:
         url:
           type: string
           format: url
+    SensorDescription:
+      type: object
+      properties:
+        sensorClassId: 
+          type: string
+        name: 
+          type: string
+        connection: 
+          type: string
+        parameter: 
+          type: string
+        tags: 
+          type: object
+        fields: 
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldDescription'
+    FieldDescription:
+      type: object
+      properties:
+        name: 
+          type: string
+        type:
+          type: string
+        rules: 
+          type: array
+          items:
+            type: object
   requestBodies:
     Organization:
       description: Organization object that needs to be added
