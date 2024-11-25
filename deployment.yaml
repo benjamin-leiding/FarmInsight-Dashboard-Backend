@@ -6,6 +6,8 @@ metadata:
   namespace: farminsight
   labels:
     app: farminsight-dashboard-backend
+  annotations:
+    etce-server-volume-backup: /app/database
 spec:
   replicas: 1 #The number of pods to be created in the
    #Kubernetes cluster for the React.js application container
