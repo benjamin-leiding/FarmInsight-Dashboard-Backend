@@ -19,8 +19,8 @@ def create_fpf(data) -> FPFSerializer:
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         InfluxDBManager.get_instance().sync_fpf_buckets()
-        update_fpf_api_key(serializer.data.get('id'))
-    return serializer.data
+        #update_fpf_api_key(serializer.data.get('id')) TODO: REENABLE
+    return serializer
 
 
 def get_fpf_by_id(fpf_id):

@@ -45,8 +45,8 @@ def build_fpf_url(fpf_address, endpoint):
     """
     if fpf_address.startswith(('http://', 'https://')):
         if endpoint.startswith('/'):
-            return f"{fpf_address}{endpoint}"
-        return f"{fpf_address}/{endpoint}"
+            return f"{fpf_address}:8001{endpoint}"
+        return f"{fpf_address}:8001/{endpoint}"
     if endpoint.startswith('/'):
-        return f"http://{fpf_address}{endpoint}"
-    return f"http://{fpf_address}/{endpoint}"
+        return f"http://{fpf_address}:8001{endpoint}"
+    return f"http://{fpf_address}:8001/{endpoint}"
