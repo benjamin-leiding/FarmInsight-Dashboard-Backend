@@ -40,7 +40,7 @@ def update_fpf_api_key(fpf_id):
     """
     from farminsight_dashboard_backend.services import send_request_to_fpf
     key = generate_random_api_key()
-    send_request_to_fpf(fpf_id, 'post', '/api/apiKeys', {"fpfId": fpf_id, "apiKey": key})
+    send_request_to_fpf(fpf_id, 'post', '/api/api-keys/', {"fpfId": fpf_id, "apiKey": key})
     fpf = FPF.objects.get(id=fpf_id)
     fpf.apiKey = key
     fpf.apiKeyValidUntil = timezone.now() + datetime.timedelta(days=30)

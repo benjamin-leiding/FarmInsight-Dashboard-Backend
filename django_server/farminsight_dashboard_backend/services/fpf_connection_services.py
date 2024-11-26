@@ -1,6 +1,6 @@
 import requests
 from requests import RequestException
-from farminsight_dashboard_backend.services import get_fpf_by_id
+
 
 
 def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
@@ -13,9 +13,18 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     :param params: Parameters to append to the URL
     :return: JSON response data
     """
+    from farminsight_dashboard_backend.services import get_fpf_by_id, get_auth_token
     fpf = get_fpf_by_id(fpf_id)
     url = f"{build_fpf_url(fpf.sensorServiceIp, endpoint)}"
+    #token = get_auth_token()
+
+    #headers = {
+    #    "Authorization": f"Bearer {token}",
+    #    "Content-Type": "application/json"  # Assuming JSON data
+    #}
+
     try:
+        #response = requests.request(method, url, json=data, params=params, headers=headers, timeout=10)
         response = requests.request(method, url, json=data, params=params, timeout=10)
         response.raise_for_status()
         return response.json()
