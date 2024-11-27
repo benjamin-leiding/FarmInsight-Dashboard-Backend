@@ -68,13 +68,12 @@ class SensorView(APIView):
         fpf_sensor_config = {
             "id": sensor.get('id'),
             "intervalSeconds": sensor.get('intervalSeconds'),
-            #"connectionType": sensor.get('connection', {}).get('connectionType'), # ?
-            "sensorClassId": '7711013a-d9f6-4990-9d9b-7222ff98ca9f', # todo
-            "additionalInformation": sensor.get('connection', {}).get('additionalInformation', {})
+            "sensorClassId": sensor.get('hardwareConfiguration', {}).get('sensorClassId', ''),
+            "additionalInformation": sensor.get('hardwareConfiguration', {}).get('additionalInformation', {}),
         }
 
         try:
-            send_request_to_fpf(fpf_id, 'post', '/api/sensors/', fpf_sensor_config)
+            send_request_to_fpf(fpf_id, 'post', '/api/sensors', fpf_sensor_config)
 
         except Exception as e:
             raise Exception(f"Unable to create sensor at FPF. {e}")
