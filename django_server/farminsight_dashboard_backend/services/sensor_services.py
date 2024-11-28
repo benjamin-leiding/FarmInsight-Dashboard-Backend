@@ -1,6 +1,6 @@
 from farminsight_dashboard_backend.exceptions import NotFoundException
-from farminsight_dashboard_backend.models import FPF, Sensor
-from farminsight_dashboard_backend.serializers.sensor_serializer import SensorSerializer
+from farminsight_dashboard_backend.models import Sensor
+from farminsight_dashboard_backend.serializers.sensor_serializer import SensorSerializer, SensorDBSchemaSerializer
 
 
 def get_sensor(sensor_id) -> Sensor:
@@ -37,15 +37,15 @@ def update_sensor(sensor_id, new_sensor):
     return serializer.data
 
 
-def create_sensor(fpf_id, sensor):
+def create_sensor(sensor):
     """
-    Send the sensor information to the fpf. On success, create the sensor config in the database
-    Create a new Sensor in the database
+    Create a new Sensor in the database.
     :return:
     """
-    serializer = SensorSerializer(data=sensor, partial=True)
+    serializer = SensorDBSchemaSerializer(data=sensor, partial=True)
     if serializer.is_valid(raise_exception=True):
-        sensor["fpf_id"] = fpf_id
-        serializer.save()
+        new_sensor = Sensor(**serializer.validated_data)
+        new_sensor.id = sensor['id']
+        new_sensor.save()
 
-    return sensor
+    return serializer.data
