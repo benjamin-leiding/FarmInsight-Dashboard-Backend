@@ -1,7 +1,8 @@
 from farminsight_dashboard_backend.exceptions import NotFoundException
-from farminsight_dashboard_backend.models import FPF
+from farminsight_dashboard_backend.models import FPF, Userprofile
 from farminsight_dashboard_backend.serializers import FPFSerializer
 from farminsight_dashboard_backend.utils import generate_random_api_key
+from .membership_services import get_memberships
 import datetime
 from django.utils import timezone
 
@@ -36,12 +37,18 @@ def create_fpf(data) -> FPFSerializer:
     return serializer
 
 
-def get_fpf_by_id(fpf_id):
+def get_fpf_by_id(fpf_id: str):
     fpf = FPF.objects.filter(id=fpf_id).prefetch_related('sensors', 'cameras', 'growingCycles').first()
     if fpf is None:
         raise NotFoundException(f'FPF with id: {fpf_id} was not found.')
-
     return fpf
+
+
+def is_user_part_of_fpf(fpf_id:str, user:Userprofile) -> bool:
+    fpf = get_fpf_by_id(fpf_id)
+
+    memberships = get_memberships(user).filter(organization_id=fpf.organization_id).all()
+    return len(memberships) > 0
 
 
 def update_fpf_api_key(fpf_id):
@@ -59,5 +66,4 @@ def update_fpf_api_key(fpf_id):
     fpf.apiKeyValidUntil = timezone.now() + datetime.timedelta(days=30)
     fpf.save()
     return
-
 

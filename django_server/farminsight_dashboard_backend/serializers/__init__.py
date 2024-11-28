@@ -5,3 +5,4 @@ from .organization_serializer import OrganizationSerializer, OrganizationFullSer
 from .date_range_serializer import DateRangeSerializer
 from .update_membership_serializer import MembershipUpdateSerializer
 from .sensor_serializer import SensorSerializer, SensorDBSchemaSerializer
+from .growing_cycle_serializer import GrowingCycleSerializer
