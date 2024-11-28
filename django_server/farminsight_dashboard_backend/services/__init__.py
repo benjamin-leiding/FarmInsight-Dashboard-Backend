@@ -7,4 +7,4 @@ from .data_services import get_all_fpf_data, get_all_sensor_data
 from .influx_services import InfluxDBManager
 from .sensor_services import get_sensor, update_sensor, create_sensor
 from .fpf_connection_services import send_request_to_fpf
-from .auth_services import get_auth_token
+from .auth_services import get_auth_token, valid_api_key_for_sensor

@@ -1,5 +1,10 @@
+from datetime import datetime
+
 import requests
 from decouple import config
+
+from farminsight_dashboard_backend.models import Sensor
+
 
 def get_auth_token():
     """
@@ -22,3 +27,8 @@ def get_auth_token():
 
     except requests.exceptions.RequestException as e:
         raise Exception(f"Failed to fetch auth token: {str(e)}")
+
+
+def valid_api_key_for_sensor(api_key: str, sensor_id: str) -> bool:
+    sensor = Sensor.objects.get(id=sensor_id)
+    return sensor.FPF.apiKey == api_key and sensor.FPF.apiKeyValidUntil > datetime.now()
