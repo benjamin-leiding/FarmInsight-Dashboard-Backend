@@ -14,10 +14,9 @@ from farminsight_dashboard_backend.views import (
     MembershipView,
     SensorView,
     get_fpf_sensor_types,
+    FpfView,
+    post_fpf_api_key
 )
-from farminsight_dashboard_backend.views.fpf_views import FpfView, post_fpf_api_key
-from farminsight_dashboard_backend.views.membership_views import MembershipView
-from farminsight_dashboard_backend.views.sensor_views import SensorView, get_fpf_sensor_types
 
 urlpatterns = [
     path('userprofiles', get_userprofile, name='get_userprofile'),
