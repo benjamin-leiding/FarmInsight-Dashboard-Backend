@@ -17,15 +17,15 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     fpf = get_fpf_by_id(fpf_id)
     url = f"{build_fpf_url(fpf.sensorServiceIp, endpoint)}"
     #token = get_auth_token()
-
-    #headers = {
-    #    "Authorization": f"Bearer {token}",
-    #    "Content-Type": "application/json"  # Assuming JSON data
-    #}
+    token = 'INSERTTOKENHERE'
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
 
     try:
-        #response = requests.request(method, url, json=data, params=params, headers=headers, timeout=10)
-        response = requests.request(method, url, json=data, params=params, timeout=10)
+        response = requests.request(method, url, json=data, params=params, headers=headers, timeout=10)
+        #response = requests.request(method, url, json=data, params=params, timeout=10)
         response.raise_for_status()
         return response.json()
 
@@ -45,8 +45,8 @@ def build_fpf_url(fpf_address, endpoint):
     """
     if fpf_address.startswith(('http://', 'https://')):
         if endpoint.startswith('/'):
-            return f"{fpf_address}:8001{endpoint}"
-        return f"{fpf_address}:8001/{endpoint}"
+            return f"{fpf_address}{endpoint}"
+        return f"{fpf_address}/{endpoint}"
     if endpoint.startswith('/'):
-        return f"http://{fpf_address}:8001{endpoint}"
-    return f"http://{fpf_address}:8001/{endpoint}"
+        return f"http://{fpf_address}{endpoint}"
+    return f"http://{fpf_address}/{endpoint}"

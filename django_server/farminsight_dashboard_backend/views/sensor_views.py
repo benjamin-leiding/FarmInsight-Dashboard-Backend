@@ -102,13 +102,11 @@ class SensorView(APIView):
 
         # Update sensor on FPF
         update_fpf_payload = {
-            "id": sensor_id,
             "intervalSeconds": data.get('intervalSeconds'),
-            #"connectionType": sensor.get('connection', {}).get('connectionType'), # ?
-            "sensorClassId": '7711013a-d9f6-4990-9d9b-7222ff98ca9f', # todo
-            "additionalInformation": data.get('connection', {}).get('additionalInformation', {})
+            "sensorClassId": data.get('hardwareConfiguration', {}).get('sensorClassId', ''),
+            "additionalInformation": data.get('hardwareConfiguration', {}).get('additionalInformation', {})
         }
-
+        print(update_fpf_payload)
         send_request_to_fpf(fpf_id, 'put', f'/api/sensors/{sensor_id}', update_fpf_payload)
 
         # Update sensor locally
