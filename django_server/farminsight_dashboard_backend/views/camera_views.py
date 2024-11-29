@@ -12,17 +12,33 @@ class CameraView(views.APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, camera_id):
+        """
+        Get a camera by its id
+        :param request:
+        :param camera_id:
+        :return:
+        """
         return Response(CameraSerializer(get_camera_by_id(camera_id)).data, status=status.HTTP_200_OK)
 
     def put(self, request, camera_id):
+        """
+        If incoming camera data is valid, update the camera by given id with the incoming data
+        :param request:
+        :param camera_id: id of the camera to update
+        :return:
+        """
         serializer = CameraSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
         camera = update_camera(camera_id, serializer.data)
-
         return Response(CameraSerializer(camera).data, status=status.HTTP_200_OK)
 
     def delete(self, request, camera_id):
+        """
+        Delete a camera by given id
+        :param request:
+        :param camera_id:
+        :return:
+        """
         delete_camera(camera_id)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -31,7 +47,7 @@ class CameraView(views.APIView):
 @permission_classes([IsAuthenticated])
 def post_camera(request):
     """
-
+    Create a new camera.
     :param request:
     :return:
     """
