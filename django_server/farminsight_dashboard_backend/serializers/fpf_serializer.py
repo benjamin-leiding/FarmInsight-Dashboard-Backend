@@ -41,7 +41,6 @@ class FPFFullSerializer(serializers.ModelSerializer):
             'name',
             'isPublic',
             'sensorServiceIp',
-            'cameraServiceIp',
             'address',
             'Sensors',
             'Cameras',

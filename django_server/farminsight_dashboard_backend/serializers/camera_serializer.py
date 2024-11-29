@@ -13,4 +13,6 @@ class CameraSerializer(serializers.ModelSerializer):
             'resolution',
             'isActive',
             'intervalSeconds',
+            'livestreamUrl',
+            'snapshotUrl',
         ]
