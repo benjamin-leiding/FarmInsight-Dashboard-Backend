@@ -47,6 +47,10 @@ CSRF_TRUSTED_ORIGINS = [
     'http://localhost:3000',
 ]
 
+# Camera snapshot storage config
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Application definition
 
 INSTALLED_APPS = [

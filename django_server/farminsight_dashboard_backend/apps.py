@@ -16,5 +16,6 @@ class FarminsightDashboardBackendConfig(AppConfig):
         """
 
         if os.environ.get('RUN_MAIN') == 'true':
-            from farminsight_dashboard_backend.services import InfluxDBManager
+            from farminsight_dashboard_backend.services import InfluxDBManager, start_scheduler
             threading.Thread(target=InfluxDBManager.get_instance().initialize_connection, daemon=True).start()
+            threading.Thread(target=start_scheduler, daemon=True).start()

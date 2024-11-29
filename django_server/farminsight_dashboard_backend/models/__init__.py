@@ -6,3 +6,4 @@ from .membership import Membership, MembershipRole
 from .organization import Organization
 from .sensor import Sensor
 from .userprofile import Userprofile, SystemRole
+from .snapshot import Snapshot

@@ -1,8 +1,12 @@
+from datetime import datetime
 from json import JSONDecodeError
+from pathlib import Path
 
 import requests
 from requests import RequestException
 
+from django_server import settings
+from farminsight_dashboard_backend.models.snapshot import Snapshot
 
 
 def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
@@ -39,6 +43,35 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     except ValueError:
         raise Exception("Invalid JSON response from the FPF service.")
 
+def fetch_camera_snapshot(camera_id, snapshot_url):
+    """
+    Fetch a snapshot from the given snapshot URL of the camera and store it as a jpg file.
+    :param camera_id:
+    :param snapshot_url:
+    :return:
+    """
+    try:
+        print("executing task")
+        response = requests.get(snapshot_url, stream=True)
+        if response.status_code == 200:
+            print("saving snapshot as jpg..")
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"camera_{camera_id}_{timestamp}.jpg"
+            save_path = Path(settings.MEDIA_ROOT) / "snapshots" / filename
+            print(save_path)
+            save_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(save_path, "wb") as img_file:
+                for chunk in response.iter_content(chunk_size=8192):
+                    img_file.write(chunk)
+            Snapshot.objects.create(
+                camera_id=camera_id,
+                file_name=filename,
+            )
+            return filename
+        else:
+            raise ValueError(f"Failed to fetch snapshot. HTTP {response.status_code}")
+    except Exception as e:
+        print(f"Error fetching snapshot for Camera {camera_id}: {e}")
 
 def build_fpf_url(fpf_address, endpoint):
     """

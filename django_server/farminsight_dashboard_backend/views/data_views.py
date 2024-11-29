@@ -1,7 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+
+from django_server import settings
 from farminsight_dashboard_backend.serializers import DateRangeSerializer
-from ..services import get_all_fpf_data, get_all_sensor_data
+from ..services import get_all_fpf_data, get_all_sensor_data, get_snapshots
 
 
 @api_view(['GET'])
@@ -39,3 +41,25 @@ def get_sensor_data(request, sensor_id):
     to_date = serializer.validated_data.get('to_date')
 
     return Response(get_all_sensor_data(sensor_id, from_date, to_date))
+
+@api_view(['GET'])
+def get_camera_snapshots(request, fpf_id, camera_id):
+    """
+    Get all snapshots for a given camera in requested time range
+    :param request:
+    :param fpf_id:
+    :param camera_id:
+    :return:
+    """
+    serializer = DateRangeSerializer(data=request.query_params)
+    serializer.is_valid(raise_exception=True)
+
+    from_date = serializer.validated_data.get('from_date')
+    to_date = serializer.validated_data.get('to_date')
+
+    snapshots = get_snapshots(camera_id, from_date, to_date)
+    snapshot_urls = [
+        f"{request.build_absolute_uri(settings.MEDIA_URL)}snapshots/{snapshot.file_name}"
+        for snapshot in snapshots
+    ]
+    return Response({"snapshots": snapshot_urls}, status=200)
