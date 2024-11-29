@@ -17,5 +17,5 @@ def get_organization_by_id(id: str) -> Organization:
 
 
 def get_organization_by_fpf_id(fpf_id) -> Organization:
-    org = FPF.objects.filter(id=fpf_id).prefetch_related('organization')
+    org = FPF.objects.filter(id=fpf_id).prefetch_related('organization').first()
     return org

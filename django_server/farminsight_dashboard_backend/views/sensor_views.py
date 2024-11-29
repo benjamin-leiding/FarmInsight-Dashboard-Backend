@@ -3,9 +3,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from farminsight_dashboard_backend.serializers import SensorSerializer
-from farminsight_dashboard_backend.services import create_sensor_at_fpf, get_memberships, get_organization_by_fpf_id, \
-    is_member, get_sensor_types_from_fpf, update_sensor_at_fpf, get_sensor_from_fpf
+from farminsight_dashboard_backend.serializers import SensorSerializer, SensorDBSchemaSerializer
+from farminsight_dashboard_backend.services import \
+    is_member, send_request_to_fpf, get_fpf_by_id
 from farminsight_dashboard_backend.services.sensor_services import get_sensor, create_sensor, \
     update_sensor
 from farminsight_dashboard_backend.utils import is_valid_uuid
@@ -29,11 +29,11 @@ class SensorView(APIView):
 
         sensor = get_sensor(sensor_id)
 
-        if not is_member(request.user, get_organization_by_fpf_id(sensor.FPF_id).id):
+        if not is_member(request.user, get_fpf_by_id(sensor.FPF_id).organization.id):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        fpf_sensor_info = get_sensor_from_fpf(sensor.FPF_id, sensor_id)
-
+        fpf_sensor_info = send_request_to_fpf(sensor.FPF_id, 'get', f'/api/sensors/{sensor_id}')
+        # todo returns here interval, wich will be duplicated information in the response
         sensor_data = SensorSerializer(sensor).data
 
         return Response({**sensor_data, "hardwareConfiguration": fpf_sensor_info}, status=status.HTTP_200_OK)
@@ -49,29 +49,37 @@ class SensorView(APIView):
         """
         fpf_id = request.data.get('fpfId')
 
-        if not is_member(request.user, get_organization_by_fpf_id(fpf_id).id):
+        if not is_member(request.user, get_fpf_by_id(fpf_id).organization.id):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         sensor = request.data.copy()
-        sensor.pop('fpfId', None)
 
-        # Generate a new UUID
+        # Generate a new UUID for the sensor
         new_uuid = uuid.uuid4()
 
+        # Build new sensor object
+        sensor["id"] = str(new_uuid)
+        sensor['FPF'] = fpf_id
+
+        # Validate the sensor object before sending it to the FPF
+        serializer = SensorDBSchemaSerializer(data=sensor, partial=True)
+        serializer.is_valid(raise_exception=True)
+
         fpf_sensor_config = {
-            "id": str(new_uuid),
+            "id": sensor.get('id'),
             "intervalSeconds": sensor.get('intervalSeconds'),
-            "connectionType": sensor.get('connection', {}).get('connectionType'),
-            "additionalInformation": sensor.get('connection', {}).get('additionalInformation', {})
+            "sensorClassId": sensor.get('hardwareConfiguration', {}).get('sensorClassId', ''),
+            "additionalInformation": sensor.get('hardwareConfiguration', {}).get('additionalInformation', {}),
         }
 
         try:
-            create_sensor_at_fpf(fpf_id, fpf_sensor_config)
+            send_request_to_fpf(fpf_id, 'post', '/api/sensors', fpf_sensor_config)
 
-            sensor["id"] = str(new_uuid)
-            create_sensor(fpf_id, sensor)
-        except Exception:
-            raise Exception("Unable to create sensor at FPF.")
+        except Exception as e:
+            raise Exception(f"Unable to create sensor at FPF. {e}")
+
+        # Safe the sensor in local db
+        create_sensor(sensor)
 
         return Response(status=status.HTTP_200_OK)
 
@@ -89,16 +97,17 @@ class SensorView(APIView):
         data = request.data
         fpf_id = get_sensor(sensor_id).FPF_id
 
-        if not is_member(request.user, get_organization_by_fpf_id(fpf_id).id):
+        if not is_member(request.user, get_fpf_by_id(fpf_id).organization.id):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         # Update sensor on FPF
         update_fpf_payload = {
-            "intervalSeconds": data.get("intervalSeconds"),
-            "connectionType": data.get("connection", {}).get("connectionType"),
-            "additionalInformation": data.get("connection", {}).get("additionalInformation", {})
+            "intervalSeconds": data.get('intervalSeconds'),
+            "sensorClassId": data.get('hardwareConfiguration', {}).get('sensorClassId', ''),
+            "additionalInformation": data.get('hardwareConfiguration', {}).get('additionalInformation', {})
         }
-        update_sensor_at_fpf(sensor_id, fpf_id, update_fpf_payload)
+        print(update_fpf_payload)
+        send_request_to_fpf(fpf_id, 'put', f'/api/sensors/{sensor_id}', update_fpf_payload)
 
         # Update sensor locally
         update_sensor_payload = {key: value for key, value in data.items() if key != "connection"}
@@ -115,11 +124,11 @@ def get_fpf_sensor_types(request, fpf_id):
     try to send a request to the fpf
     :return:
     """
-    if not is_member(request.user, get_organization_by_fpf_id(fpf_id).id):
+    if not is_member(request.user, get_fpf_by_id(fpf_id).organization.id):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     if is_valid_uuid(fpf_id):
-        sensor_types = get_sensor_types_from_fpf(fpf_id)
+        sensor_types = send_request_to_fpf(fpf_id, 'get', '/api/sensors/types')
         return Response(sensor_types, status=status.HTTP_200_OK)
 
     return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
