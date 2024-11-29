@@ -16,3 +16,9 @@ class CameraSerializer(serializers.ModelSerializer):
             'livestreamUrl',
             'snapshotUrl',
         ]
+
+    def validate(self, data):
+        interval = data.get('intervalSeconds')
+        if interval <= 0:
+            raise serializers.ValidationError("The interval must be greater than 0.")
+        return data

@@ -15,7 +15,9 @@ from farminsight_dashboard_backend.views import (
     SensorView,
     get_fpf_sensor_types,
     FpfView,
-    post_fpf_api_key
+    post_fpf_api_key,
+    post_camera,
+    CameraView
 )
 
 urlpatterns = [
@@ -37,5 +39,7 @@ urlpatterns = [
     path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
     path('growing-cycles', post_growing_cycle, name='post_growing_cycle'),
     path('growing-cycles/<str:growing_cycle_id>', put_growing_cycle, name='put_growing_cycle'),
+    path('cameras', post_camera, name='post_camera'),
+    path('cameras/<str:camera_id>', CameraView.as_view(), name='camera_operations'),
 ]
 

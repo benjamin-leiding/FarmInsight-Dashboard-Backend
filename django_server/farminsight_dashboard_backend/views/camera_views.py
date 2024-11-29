@@ -1,0 +1,44 @@
+from rest_framework import views
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from farminsight_dashboard_backend.serializers.camera_serializer import CameraSerializer
+from farminsight_dashboard_backend.services import get_camera_by_id, update_camera, delete_camera, \
+    get_fpf_by_id, create_camera
+
+
+class CameraView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, camera_id):
+        return Response(CameraSerializer(get_camera_by_id(camera_id)).data, status=status.HTTP_200_OK)
+
+    def put(self, request, camera_id):
+        serializer = CameraSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        camera = update_camera(camera_id, serializer.data)
+
+        return Response(CameraSerializer(camera).data, status=status.HTTP_200_OK)
+
+    def delete(self, request, camera_id):
+        delete_camera(camera_id)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def post_camera(request):
+    """
+
+    :param request:
+    :return:
+    """
+    camera_data = request.data.get('camera')
+    fpf_id = request.data.get('fpfId')
+
+    get_fpf_by_id(fpf_id)
+    CameraSerializer(data=camera_data).is_valid(raise_exception=True)
+
+    return Response(CameraSerializer(create_camera(fpf_id, camera_data)).data, status=status.HTTP_201_CREATED)
