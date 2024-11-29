@@ -1,1 +1,1 @@
-from .ws_consumer import MeasurementUpdatesConsumer
+from .ws_consumer import SensorUpdatesConsumer
