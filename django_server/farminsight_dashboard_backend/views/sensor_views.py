@@ -106,7 +106,6 @@ class SensorView(APIView):
             "sensorClassId": data.get('hardwareConfiguration', {}).get('sensorClassId', ''),
             "additionalInformation": data.get('hardwareConfiguration', {}).get('additionalInformation', {})
         }
-        print(update_fpf_payload)
         send_request_to_fpf(fpf_id, 'put', f'/api/sensors/{sensor_id}', update_fpf_payload)
 
         # Update sensor locally
