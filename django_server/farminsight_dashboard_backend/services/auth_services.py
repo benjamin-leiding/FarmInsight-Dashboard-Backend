@@ -1,7 +1,8 @@
-from datetime import datetime
+
 
 import requests
 from decouple import config
+from django.utils import timezone
 
 from farminsight_dashboard_backend.models import Sensor
 
@@ -31,4 +32,4 @@ def get_auth_token():
 
 def valid_api_key_for_sensor(api_key: str, sensor_id: str) -> bool:
     sensor = Sensor.objects.get(id=sensor_id)
-    return sensor.FPF.apiKey == api_key and sensor.FPF.apiKeyValidUntil > datetime.now()
+    return sensor.FPF.apiKey == api_key and sensor.FPF.apiKeyValidUntil > timezone.now()
