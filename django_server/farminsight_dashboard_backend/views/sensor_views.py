@@ -36,7 +36,7 @@ class SensorView(APIView):
 
         sensor_data = SensorSerializer(sensor).data
 
-        return Response({**sensor_data, "connection": fpf_sensor_info}, status=status.HTTP_200_OK)
+        return Response({**sensor_data, "hardwareConfiguration": fpf_sensor_info}, status=status.HTTP_200_OK)
 
     def post(self, request):
         """
