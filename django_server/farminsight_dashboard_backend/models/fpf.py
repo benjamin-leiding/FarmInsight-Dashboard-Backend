@@ -9,7 +9,6 @@ class FPF(models.Model):
     name = models.CharField(max_length=256)
     isPublic = models.BooleanField(default=False)
     sensorServiceIp = models.CharField(max_length=256)
-    cameraServiceIp = models.CharField(max_length=256)
     address = models.CharField(max_length=256)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     apiKey = models.CharField(max_length=64, default=generate_random_api_key)

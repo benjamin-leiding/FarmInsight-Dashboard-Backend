@@ -11,4 +11,6 @@ class Camera(models.Model):
     resolution = models.CharField(max_length=256)
     isActive = models.BooleanField(default=False)
     intervalSeconds = models.IntegerField()
+    snapshotUrl = models.CharField(max_length=256)
+    livestreamUrl = models.CharField(max_length=256)
     FPF = models.ForeignKey(FPF, related_name='cameras', on_delete=models.CASCADE)
