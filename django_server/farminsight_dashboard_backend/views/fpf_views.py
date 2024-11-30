@@ -18,8 +18,8 @@ class FpfView(views.APIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
-def post_fpf_api_key(request, fpf_id):
+@api_view(['GET'])
+def get_fpf_api_key(request, fpf_id):
     """
     Generate a new apiKey and try to send it to the FPF.
     On success, save the new key in the database.

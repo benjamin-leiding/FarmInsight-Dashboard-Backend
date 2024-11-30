@@ -15,7 +15,7 @@ from farminsight_dashboard_backend.views import (
     SensorView,
     get_fpf_sensor_types,
     FpfView,
-    post_fpf_api_key
+    get_fpf_api_key
 )
 
 urlpatterns = [
@@ -25,7 +25,7 @@ urlpatterns = [
     path('organizations', post_organization, name='post_organization'),
     path('fpfs', FpfView.as_view(), name='post_fpf'),
     path('fpfs/<str:fpf_id>', FpfView.as_view(), name='fpf_operations'),
-    path('fpfs/<str:fpf_id>/apiKey', post_fpf_api_key, name='post_fpf_api_key'),
+    path('fpfs/<str:fpf_id>/api-key', get_fpf_api_key, name='get_fpf_api_key'),
     path('fpfs/<str:fpf_id>/data', get_fpf_data, name='get_fpf_data'),
     path('organizations/<str:organization_id>', get_organization, name='get_organization'),
     path('memberships', MembershipView.as_view(), name='post_membership'),
