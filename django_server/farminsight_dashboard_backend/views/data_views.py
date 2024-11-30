@@ -1,9 +1,12 @@
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from django_server import settings
 from farminsight_dashboard_backend.serializers import DateRangeSerializer
-from ..services import get_all_fpf_data, get_all_sensor_data, get_snapshots
+from ..serializers.fpf_serializer import FPFFullDataSerializer
+from ..serializers.snapshot_serializer import SnapshotURLSerializer
+from ..services import get_all_fpf_data, get_all_sensor_data, get_snapshots_by_camera
 
 
 @api_view(['GET'])
@@ -23,7 +26,11 @@ def get_fpf_data(request, fpf_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    return Response(get_all_fpf_data(fpf_id, from_date, to_date))
+    serializer = FPFFullDataSerializer(get_all_fpf_data(fpf_id), context={'from_date': from_date,
+                                                                          'to_date': to_date,
+                                                                          'request': request})
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -43,11 +50,10 @@ def get_sensor_data(request, sensor_id):
     return Response(get_all_sensor_data(sensor_id, from_date, to_date))
 
 @api_view(['GET'])
-def get_camera_snapshots(request, fpf_id, camera_id):
+def get_camera_snapshots(request, camera_id):
     """
     Get all snapshots for a given camera in requested time range
     :param request:
-    :param fpf_id:
     :param camera_id:
     :return:
     """
@@ -57,9 +63,6 @@ def get_camera_snapshots(request, fpf_id, camera_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    snapshots = get_snapshots(camera_id, from_date, to_date)
-    snapshot_urls = [
-        f"{request.build_absolute_uri(settings.MEDIA_URL)}snapshots/{snapshot.file_name}"
-        for snapshot in snapshots
-    ]
-    return Response({"snapshots": snapshot_urls}, status=200)
+    snapshots = get_snapshots_by_camera(camera_id, from_date, to_date)
+
+    return Response(SnapshotURLSerializer(snapshots, many=True, context={'request': request}).data, status=200)

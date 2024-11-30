@@ -1,7 +1,7 @@
 from farminsight_dashboard_backend.models.snapshot import Snapshot
 
 
-def get_snapshots(camera_id, from_date, to_date=None):
+def get_snapshots_by_camera(camera_id, from_date, to_date=None):
     """
     Retrieve snapshots for a specific camera within a given timeframe.
 

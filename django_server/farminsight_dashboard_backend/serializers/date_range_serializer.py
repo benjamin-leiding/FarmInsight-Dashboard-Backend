@@ -14,7 +14,7 @@ class DateRangeSerializer(serializers.Serializer):
         required=False,
         default=None,
     )
-
+    # TODO on 'from' not in request the error message is wrong, saying we excpect 'from_date'..
     def validate(self, data):
         """
         Check that ``from`` parameter is given and that it is before the ``to`` parameter
@@ -25,11 +25,11 @@ class DateRangeSerializer(serializers.Serializer):
         to_date = data.get('to_date')
 
         if from_date is None:
-            raise serializers.ValidationError({"from_date": "The 'from' query parameter is required."})
+            raise serializers.ValidationError({"from": "The 'from' query parameter is required."})
 
 
         if to_date and to_date < from_date:
-            raise serializers.ValidationError({"to_date": "'to' date must be later than 'from' date."})
+            raise serializers.ValidationError({"to": "'to' date must be later than 'from' date."})
 
         return data
 

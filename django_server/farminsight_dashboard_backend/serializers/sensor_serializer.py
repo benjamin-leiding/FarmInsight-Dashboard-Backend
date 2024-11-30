@@ -1,8 +1,10 @@
 from rest_framework import serializers
 from farminsight_dashboard_backend.models import Sensor
+from farminsight_dashboard_backend.utils import get_date_range
 
 
 class SensorSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Sensor
         fields = [
@@ -14,6 +16,37 @@ class SensorSerializer(serializers.ModelSerializer):
             'isActive',
             'intervalSeconds',
         ]
+
+
+class SensorDataSerializer(serializers.ModelSerializer):
+    measurements = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sensor
+        fields = [
+            'id',
+            'name',
+            'location',
+            'unit',
+            'modelNr',
+            'isActive',
+            'intervalSeconds',
+            'measurements'
+        ]
+
+    def get_measurements(self, obj):
+        from farminsight_dashboard_backend.services import InfluxDBManager
+
+        from_date = self.context.get('from_date')
+        to_date = self.context.get('to_date')
+        from_date_iso, to_date_iso = get_date_range(from_date, to_date)
+
+        return InfluxDBManager.get_instance().fetch_sensor_measurements(
+            fpf_id=obj.FPF.id,
+            sensor_ids=[obj.id],
+            from_date=from_date_iso,
+            to_date=to_date_iso,
+        ).get(str(obj.id), [])
 
 
 class SensorDBSchemaSerializer(serializers.ModelSerializer):

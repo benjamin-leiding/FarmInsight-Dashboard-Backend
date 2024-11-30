@@ -45,5 +45,7 @@ urlpatterns = [
     path('growing-cycles/<str:growing_cycle_id>', put_growing_cycle, name='put_growing_cycle'),
     path('cameras', post_camera, name='post_camera'),
     path('cameras/<str:camera_id>', CameraView.as_view(), name='camera_operations'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # TODO remove as config will be handled by nginx
+]
+
+
 

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from json import JSONDecodeError
 from pathlib import Path
@@ -51,22 +52,22 @@ def fetch_camera_snapshot(camera_id, snapshot_url):
     :return:
     """
     try:
-        print("executing task")
         response = requests.get(snapshot_url, stream=True)
         if response.status_code == 200:
-            print("saving snapshot as jpg..")
-            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-            filename = f"camera_{camera_id}_{timestamp}.jpg"
-            save_path = Path(settings.MEDIA_ROOT) / "snapshots" / filename
-            print(save_path)
+
+            filename = f"{str(uuid.uuid4())}.jpg"
+            save_path = Path(settings.MEDIA_ROOT) / filename
             save_path.parent.mkdir(parents=True, exist_ok=True)
+
             with open(save_path, "wb") as img_file:
                 for chunk in response.iter_content(chunk_size=8192):
                     img_file.write(chunk)
+
             Snapshot.objects.create(
                 camera_id=camera_id,
-                file_name=filename,
+                file_name=filename
             )
+
             return filename
         else:
             raise ValueError(f"Failed to fetch snapshot. HTTP {response.status_code}")
