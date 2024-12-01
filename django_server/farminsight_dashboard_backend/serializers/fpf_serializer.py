@@ -46,3 +46,5 @@ class FPFFullSerializer(serializers.ModelSerializer):
             'Cameras',
             'GrowingCycles',
         ]
+
+

@@ -1,6 +1,6 @@
 from farminsight_dashboard_backend.exceptions import NotFoundException
 from farminsight_dashboard_backend.models import FPF, Userprofile
-from farminsight_dashboard_backend.serializers import FPFSerializer
+from farminsight_dashboard_backend.serializers import FPFSerializer, FPFPreviewSerializer
 from farminsight_dashboard_backend.utils import generate_random_api_key
 from .membership_services import get_memberships
 import datetime
@@ -66,4 +66,16 @@ def update_fpf_api_key(fpf_id):
     fpf.apiKeyValidUntil = timezone.now() + datetime.timedelta(days=30)
     fpf.save()
     return
+
+def get_visible_fpf_preview(user: Userprofile=None) -> FPFPreviewSerializer:
+    fpfs = set()
+    if user:
+        memberships = get_memberships(user)
+        fpfs |= set([fpf for membership in memberships for fpf in membership.organization.fpf_set])
+
+    public_fpfs = FPF.objects.filter(isPublic=True).all()
+    fpfs |= set([fpf for fpf in public_fpfs])
+
+    serializer = FPFPreviewSerializer(fpfs, many=True)
+    return serializer
 
