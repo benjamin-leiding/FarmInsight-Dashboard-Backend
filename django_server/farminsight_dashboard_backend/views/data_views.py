@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from django_server import settings
 from farminsight_dashboard_backend.serializers import DateRangeSerializer
 from ..serializers.fpf_serializer import FPFFullDataSerializer
-from ..serializers.snapshot_serializer import SnapshotURLSerializer
-from ..services import get_all_fpf_data, get_all_sensor_data, get_snapshots_by_camera
+from ..serializers.image_serializer import ImageURLSerializer
+from ..services import get_all_fpf_data, get_all_sensor_data, get_images_by_camera
 
 
 @api_view(['GET'])
@@ -50,9 +50,9 @@ def get_sensor_data(request, sensor_id):
     return Response(get_all_sensor_data(sensor_id, from_date, to_date))
 
 @api_view(['GET'])
-def get_camera_snapshots(request, camera_id):
+def get_camera_images(request, camera_id):
     """
-    Get all snapshots for a given camera in requested time range
+    Get all images for a given camera in requested time range
     :param request:
     :param camera_id:
     :return:
@@ -63,6 +63,6 @@ def get_camera_snapshots(request, camera_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    snapshots = get_snapshots_by_camera(camera_id, from_date, to_date)
+    images = get_images_by_camera(camera_id, from_date, to_date)
 
-    return Response(SnapshotURLSerializer(snapshots, many=True, context={'request': request}).data, status=200)
+    return Response(ImageURLSerializer(images, many=True, context={'request': request}).data, status=200)

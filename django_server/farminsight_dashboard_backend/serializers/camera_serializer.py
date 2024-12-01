@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from django_server import settings
 from farminsight_dashboard_backend.models import Camera
-from farminsight_dashboard_backend.serializers.snapshot_serializer import SnapshotURLSerializer
+from farminsight_dashboard_backend.serializers.image_serializer import ImageURLSerializer
 
 
 class CameraSerializer(serializers.ModelSerializer):
@@ -27,7 +27,7 @@ class CameraSerializer(serializers.ModelSerializer):
         return data
 
 class CameraImageSerializer(serializers.ModelSerializer):
-    images = SnapshotURLSerializer(many=True, source='snapshots')
+    images = ImageURLSerializer(many=True)
 
     class Meta:
         model = Camera
