@@ -134,6 +134,54 @@ class InfluxDBManager:
 
         return measurements
 
+    def fetch_latest_sensor_measurements(self, fpf_id: str, sensor_ids: list) -> dict:
+        """
+        Queries InfluxDB for the latest measurement for each sensor.
+        :param fpf_id: The ID of the FPF (used as the bucket name in InfluxDB).
+        :param sensor_ids: List of sensor IDs to query data for.
+        :return: Dictionary with sensor IDs as keys, each containing the latest measurement.
+        """
+
+        if not self.client:
+            self.log.error("InfluxDB client is not initialized.")
+            raise InfluxDBNoConnectionException("InfluxDB client is not initialized.")
+
+        try:
+            query_api = self.client.query_api()
+
+            # Build the filter part of the query for multiple sensors
+            sensor_filter = " or ".join([f'r["sensorId"] == "{sensor_id}"' for sensor_id in sensor_ids])
+
+            query = (
+                f'from(bucket: "{fpf_id}") '
+                f'|> range(start: -1y) '  # Arbitrary long range to include all data
+                f'|> filter(fn: (r) => r["_measurement"] == "SensorData" and ({sensor_filter})) '
+                f'|> sort(columns: ["_time"], desc: true) '
+                f'|> unique(column: "sensorId") '
+            )
+
+            result = query_api.query(org=self.influxdb_settings['org'], query=query)
+
+            # Process and organize results by sensor ID
+            latest_measurements = {}
+            for table in result:
+                for record in table.records:
+                    sensor_id = record.values["sensorId"]
+                    latest_measurements[sensor_id] = {
+                        "measuredAt": record.get_time().isoformat(),
+                        "value": record.get_value()
+                    }
+
+        except requests.exceptions.ConnectionError as e:
+            self.log.error(f"Failed to connect to InfluxDB: {e}")
+            raise InfluxDBNoConnectionException("Unable to connect to InfluxDB.")
+
+        except Exception as e:
+            self.log.error(f"Failed to fetch latest sensor measurements from InfluxDB: {e}")
+            raise InfluxDBQueryException(str(e))
+
+        return latest_measurements
+
     def write_sensor_measurements(self, fpf_id: str, sensor_id: str, measurements):
         write_api = self.client.write_api(write_options=SYNCHRONOUS)
 

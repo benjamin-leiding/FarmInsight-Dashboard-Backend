@@ -2,6 +2,9 @@ from django.apps import AppConfig
 import os
 import threading
 
+from django.db.models.signals import post_migrate
+
+
 class FarminsightDashboardBackendConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'farminsight_dashboard_backend'
@@ -16,5 +19,15 @@ class FarminsightDashboardBackendConfig(AppConfig):
 
         if os.environ.get('RUN_MAIN') == 'true':
             from farminsight_dashboard_backend.services import InfluxDBManager, CameraScheduler
-            threading.Thread(target=InfluxDBManager.get_instance().initialize_connection, daemon=True).start()
-            threading.Thread(target=CameraScheduler.get_instance().start, daemon=True).start()
+            from django.db import connections
+
+            def initialize_services(sender, **kwargs):
+                if connections['default'].is_usable():
+                    threading.Thread(
+                        target=InfluxDBManager.get_instance().initialize_connection, daemon=True
+                    ).start()
+                    threading.Thread(
+                        target=CameraScheduler.get_instance().start, daemon=True
+                    ).start()
+
+            post_migrate.connect(initialize_services, sender=self)

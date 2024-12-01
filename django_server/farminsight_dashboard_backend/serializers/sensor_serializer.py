@@ -48,6 +48,29 @@ class SensorDataSerializer(serializers.ModelSerializer):
             to_date=to_date_iso,
         ).get(str(obj.id), [])
 
+class SensorLastValueSerializer(serializers.ModelSerializer):
+    lastMeasurement = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sensor
+        fields = [
+            'id',
+            'name',
+            'location',
+            'unit',
+            'modelNr',
+            'isActive',
+            'intervalSeconds',
+            'lastMeasurement'
+        ]
+
+    def get_measurement(self, obj):
+        from farminsight_dashboard_backend.services import InfluxDBManager
+
+        return InfluxDBManager.get_instance().fetch_latest_sensor_measurements(
+            fpf_id=obj.FPF.id,
+            sensor_ids=[str(obj.id)],
+        ).get(str(obj.id), [])
 
 class SensorDBSchemaSerializer(serializers.ModelSerializer):
     class Meta:
