@@ -1,5 +1,7 @@
-from influxdb_client import InfluxDBClient
+from influxdb_client import InfluxDBClient, Point, WritePrecision
 from django.conf import settings
+from influxdb_client.client.write_api import SYNCHRONOUS
+
 from farminsight_dashboard_backend.exceptions import InfluxDBQueryException, InfluxDBNoConnectionException
 from farminsight_dashboard_backend.models import FPF
 import requests
@@ -131,6 +133,21 @@ class InfluxDBManager:
             raise InfluxDBQueryException(str(e))
 
         return measurements
+
+    def write_sensor_measurements(self, fpf_id: str, sensor_id: str, measurements):
+        write_api = self.client.write_api(write_options=SYNCHRONOUS)
+
+        points = []
+        for measurement in measurements:
+            point = (
+                Point("SensorData")
+                .tag("sensorId", str(sensor_id))
+                .field("value", float(measurement['value']))
+                .time(measurement['measuredAt'], WritePrecision.NS)
+            )
+            points.append(point)
+
+        write_api.write(bucket=fpf_id, record=points)
 
     def close(self):
         """Close the InfluxDB client if it's open."""

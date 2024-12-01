@@ -43,7 +43,7 @@ class SensorDataSerializer(serializers.ModelSerializer):
 
         return InfluxDBManager.get_instance().fetch_sensor_measurements(
             fpf_id=obj.FPF.id,
-            sensor_ids=[obj.id],
+            sensor_ids=[str(obj.id)],
             from_date=from_date_iso,
             to_date=to_date_iso,
         ).get(str(obj.id), [])
