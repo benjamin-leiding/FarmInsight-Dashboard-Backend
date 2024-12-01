@@ -58,9 +58,6 @@ paths:
                 sensorServiceIp:
                   type: string
                   format: ipv4
-                cameraServiceIp:
-                  type: string
-                  format: ipv4
                 address:
                   type: string
         required: true
@@ -80,9 +77,6 @@ paths:
                   isPublic:
                     type: boolean
                   sensorServiceIp:
-                    type: string
-                    format: ipv4
-                  cameraServiceIp:
                     type: string
                     format: ipv4
                   address:
@@ -126,9 +120,6 @@ paths:
                   isPublic:
                     type: boolean
                   sensorServiceIp:
-                    type: string
-                    format: ipv4
-                  cameraServiceIp:
                     type: string
                     format: ipv4
                   address:
@@ -185,9 +176,6 @@ paths:
                 sensorServiceIp:
                   type: string
                   format: ipv4
-                cameraServiceIp:
-                  type: string
-                  format: ipv4
                 address:
                   type: string
         required: true
@@ -207,9 +195,6 @@ paths:
                   isPublic:
                     type: boolean
                   sensorServiceIp:
-                    type: string
-                    format: ipv4
-                  cameraServiceIp:
                     type: string
                     format: ipv4
                   address:
@@ -485,14 +470,18 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                fpfId:
-                  description: ID of FPF that the Camera belongs to
-                  type: string
-                  format: uuid
-                camera:
-                  $ref: '#/components/schemas/Camera'
+              allOf:
+                - type: object
+                  properties:
+                    fpfId:
+                      description: ID of FPF that the Camera belongs to
+                      type: string
+                      format: uuid
+                - $ref: '#/components/schemas/Camera'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
         required: true
       responses:
         '200':
@@ -1304,6 +1293,10 @@ components:
           type: boolean
         intervalSeconds:
           type: integer
+        livestreamUrl:
+          type: string
+        snapshotUrl:
+          type: string
     Sensor:
       type: object
       properties:
@@ -1356,9 +1349,6 @@ components:
         isPublic:
           type: boolean
         sensorServiceIp:
-          type: string
-          format: ipv4
-        cameraServiceIp:
           type: string
           format: ipv4
         address:
