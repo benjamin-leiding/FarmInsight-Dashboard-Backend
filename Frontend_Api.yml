@@ -250,6 +250,15 @@ paths:
                       type: string
                     organization:
                       $ref: '#/components/schemas/OrganizationTK'
+                    lastImageUrl:
+                      type: string
+                    sensors:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
   /fpfs/own:
     get:
       tags:
