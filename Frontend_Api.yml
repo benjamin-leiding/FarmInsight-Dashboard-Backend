@@ -136,7 +136,13 @@ paths:
                   Sensors:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Sensor'
+                      type: object
+                      allOf:
+                        - $ref: '#/components/schemas/Sensor'
+                        - type: object
+                          properties:
+                            lastMeasurement:
+                              $ref: '#/components/schemas/Measurement'
                   Cameras:
                     type: array
                     items:
