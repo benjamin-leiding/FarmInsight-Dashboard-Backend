@@ -1,6 +1,22 @@
 from farminsight_dashboard_backend.exceptions import NotFoundException
 from farminsight_dashboard_backend.models import Camera, FPF
+from farminsight_dashboard_backend.serializers import CameraSerializer
 
+
+def get_active_camera_by_id(camera_id:str) -> Camera:
+    """
+    Get active camera by id
+    :param camera_id:
+    :return: Camera
+    :throws: NotFoundException
+    """
+    try:
+        camera =  Camera.objects.get(id=camera_id)
+        if not camera.isActive:
+            raise NotFoundException(f'Camera with id: {camera_id} is not active.')
+        return camera
+    except Camera.DoesNotExist:
+        raise NotFoundException(f'Camera with id: {camera_id} was not found.')
 
 def get_camera_by_id(camera_id:str) -> Camera:
     """
@@ -14,20 +30,22 @@ def get_camera_by_id(camera_id:str) -> Camera:
     except Camera.DoesNotExist:
         raise NotFoundException(f'Camera with id: {camera_id} was not found.')
 
-
-def create_camera(fpf_id:str, camera_data:any) -> Camera:
+def create_camera(fpf_id:str, camera_data:dict) -> Camera:
     """
-    Create new camera by id and camera data
-    :param fpf_id: id of the camera's FPF
-    :param camera_data: camera data
-    :return: Camera
+    Create a new camera by FPF ID and camera data.
+    :param fpf_id: ID of the camera's FPF
+    :param camera_data: Camera data
+    :return: Newly created Camera instance
     """
     try:
         fpf = FPF.objects.get(id=fpf_id)
     except FPF.DoesNotExist:
         raise ValueError("FPF with the given ID does not exist")
-    camera = Camera.objects.create(FPF=fpf, **camera_data)
-    return camera
+
+    serializer = CameraSerializer(data=camera_data, partial=True)
+    serializer.is_valid(raise_exception=True)
+
+    return serializer.save(FPF=fpf)
 
 
 def update_camera(camera_id:str, camera_data:any) -> Camera:

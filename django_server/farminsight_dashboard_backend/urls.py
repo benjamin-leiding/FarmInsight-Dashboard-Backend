@@ -20,7 +20,8 @@ from farminsight_dashboard_backend.views import (
     post_fpf_api_key,
     post_camera,
     CameraView,
-    get_camera_images
+    get_camera_images,
+    get_camera_livestream
 )
 
 urlpatterns = [
@@ -45,6 +46,7 @@ urlpatterns = [
     path('growing-cycles/<str:growing_cycle_id>', put_growing_cycle, name='put_growing_cycle'),
     path('cameras', post_camera, name='post_camera'),
     path('cameras/<str:camera_id>', CameraView.as_view(), name='camera_operations'),
+    path('cameras/<str:camera_id>/livestream', get_camera_livestream, name='get_camera_livestream'),
 ]
 
 

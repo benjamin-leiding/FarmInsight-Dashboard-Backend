@@ -5,6 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from farminsight_dashboard_backend.models import Camera
+from farminsight_dashboard_backend.services import get_camera_by_id
 from farminsight_dashboard_backend.services.fpf_connection_services import fetch_camera_snapshot
 
 class CameraScheduler:
@@ -46,16 +47,17 @@ class CameraScheduler:
         :param camera_id: ID of the camera
         """
         try:
-            camera = Camera.objects.get(id=camera_id, isActive=True)
-            interval = camera.intervalSeconds
-            self._scheduler.add_job(
-                fetch_camera_snapshot,
-                trigger=IntervalTrigger(seconds=interval),
-                args=[camera.id, camera.snapshotUrl],
-                id=f"camera_{camera.id}_snapshot",
-                replace_existing=True,
-            )
-            self.log.info(f"Camera {camera.id} snapshot task scheduled with interval {interval} seconds.")
+            camera = get_camera_by_id(camera_id)
+            if camera.isActive:
+                interval = camera.intervalSeconds
+                self._scheduler.add_job(
+                    fetch_camera_snapshot,
+                    trigger=IntervalTrigger(seconds=interval),
+                    args=[camera.id, camera.snapshotUrl],
+                    id=f"camera_{camera.id}_snapshot",
+                    replace_existing=True,
+                )
+                self.log.info(f"Camera {camera.id} snapshot task scheduled with interval {interval} seconds.")
         except Camera.DoesNotExist:
             self.log.warning(f"Camera with ID {camera_id} does not exist or is not active.")
 
@@ -67,8 +69,9 @@ class CameraScheduler:
         """
         try:
             camera = Camera.objects.get(id=camera_id, isActive=True)
-            self._scheduler.remove_job(job_id=f"camera_{camera.id}_snapshot")
-            self.log.info(f"Camera {camera.id} snapshot task deleted.")
+            if camera.isActive:
+                self._scheduler.remove_job(job_id=f"camera_{camera.id}_snapshot")
+                self.log.info(f"Camera {camera.id} snapshot task deleted.")
         except Camera.DoesNotExist:
             self.log.warning(f"Camera with ID {camera_id} does not exist or is not active.")
 

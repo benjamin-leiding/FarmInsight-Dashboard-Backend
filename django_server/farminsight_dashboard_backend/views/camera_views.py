@@ -1,11 +1,14 @@
+from urllib.parse import urlparse
+from django.http import StreamingHttpResponse
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from farminsight_dashboard_backend.serializers.camera_serializer import CameraSerializer
-from farminsight_dashboard_backend.services import get_camera_by_id, update_camera, delete_camera, \
-    get_fpf_by_id, create_camera
+from farminsight_dashboard_backend.services import get_active_camera_by_id, update_camera, delete_camera, \
+    get_fpf_by_id, create_camera, is_member, get_camera_by_id
+from farminsight_dashboard_backend.services.fpf_streaming_services import rtsp_stream, http_stream
 
 
 class CameraView(views.APIView):
@@ -63,12 +66,50 @@ def post_camera(request):
     :return:
     """
     from farminsight_dashboard_backend.services import CameraScheduler
-    camera_data = request.data.get('camera')
+
     fpf_id = request.data.get('fpfId')
 
     get_fpf_by_id(fpf_id)
-    CameraSerializer(data=camera_data).is_valid(raise_exception=True)
-    camera = CameraSerializer(create_camera(fpf_id, camera_data)).data
+
+    camera = CameraSerializer(create_camera(fpf_id, request.data)).data
     CameraScheduler.get_instance().add_camera_job(camera.get('id'))
 
     return Response(camera, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+#@permission_classes([IsAuthenticated])
+def get_camera_livestream(request, camera_id):
+    """
+    Only member of the fpf's organization are allowed to stream.
+    User http or rtsp streaming protocol (depending on the camera livestream url) to stream a video feed.
+    :param request:
+    :param camera_id:
+    :return:
+    """
+    camera = get_active_camera_by_id(camera_id)
+    livestream_url = camera.livestreamUrl
+
+    #if not is_member(request.user, get_fpf_by_id(str(camera.FPF_id)).organization.id):
+    #    return Response(status=status.HTTP_403_FORBIDDEN)
+
+    parsed_url = urlparse(livestream_url)
+    scheme = parsed_url.scheme.lower()
+
+    if scheme == 'http' or scheme == 'https':
+        return StreamingHttpResponse(
+            http_stream(livestream_url),
+            content_type="video/mp4"
+        )
+
+    elif scheme == 'rtsp':
+        return StreamingHttpResponse(
+            rtsp_stream(livestream_url),
+            content_type='multipart/x-mixed-replace; boundary=frame'
+        )
+
+    else:
+        return StreamingHttpResponse(
+            f"Unsupported protocol: {scheme}".encode("utf-8"),
+            status=400,
+            content_type="text/plain"
+        )
