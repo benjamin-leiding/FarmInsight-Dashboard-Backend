@@ -15,7 +15,8 @@ from farminsight_dashboard_backend.views import (
     SensorView,
     get_fpf_sensor_types,
     FpfView,
-    get_fpf_api_key
+    get_fpf_api_key,
+    get_websocket_token
 )
 
 urlpatterns = [
@@ -37,5 +38,6 @@ urlpatterns = [
     path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
     path('growing-cycles', post_growing_cycle, name='post_growing_cycle'),
     path('growing-cycles/<str:growing_cycle_id>', put_growing_cycle, name='put_growing_cycle'),
+    path('websocket-token', get_websocket_token, name='get_websocket_token'),
 ]
 

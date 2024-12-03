@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from farminsight_dashboard_backend.serializers import DateRangeSerializer
-from ..services import get_all_fpf_data, get_all_sensor_data
+from farminsight_dashboard_backend.services import get_all_fpf_data, get_all_sensor_data
 
 
 @api_view(['GET'])
