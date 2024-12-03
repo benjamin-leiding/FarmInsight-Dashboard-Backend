@@ -24,3 +24,11 @@ def update_growing_cycle(growing_cycle_id:str, data, creating_user: Userprofile)
     if serializer.is_valid(raise_exception=True):
         serializer.save()
         return serializer
+
+
+def remove_growing_cycle(growing_cycle_id:str, deleting_user: Userprofile):
+    growing_cycle = GrowingCycle.objects.get(id=growing_cycle_id)
+    if is_user_part_of_fpf(growing_cycle.FPF_id, deleting_user):
+        growing_cycle.delete()
+    else:
+        raise PermissionDenied()

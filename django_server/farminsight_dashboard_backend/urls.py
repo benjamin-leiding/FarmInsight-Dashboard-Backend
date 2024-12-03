@@ -1,7 +1,5 @@
-from django.conf.urls.static import static
 from django.urls import path
 
-from django_server import settings
 from farminsight_dashboard_backend.views import (
     UserprofileView,
     get_userprofile,
@@ -12,7 +10,7 @@ from farminsight_dashboard_backend.views import (
     get_sensor_data,
     get_organization,
     post_growing_cycle,
-    put_growing_cycle,
+    GrowingCycleViews,
     MembershipView,
     SensorView,
     get_fpf_sensor_types,
@@ -42,7 +40,7 @@ urlpatterns = [
     path('sensors/types/available/<str:fpf_id>', get_fpf_sensor_types, name='get_fpf_sensor_types'),
     path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
     path('growing-cycles', post_growing_cycle, name='post_growing_cycle'),
-    path('growing-cycles/<str:growing_cycle_id>', put_growing_cycle, name='put_growing_cycle'),
+    path('growing-cycles/<str:growing_cycle_id>', GrowingCycleViews.as_view(), name='growing_cycle_edits'),
     path('cameras', post_camera, name='post_camera'),
     path('cameras/<str:camera_id>', CameraView.as_view(), name='camera_operations'),
 ]
