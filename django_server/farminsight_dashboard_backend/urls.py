@@ -1,5 +1,7 @@
+from django.conf.urls.static import static
 from django.urls import path
 
+from django_server import settings
 from farminsight_dashboard_backend.views import (
     UserprofileView,
     get_userprofile,
@@ -15,7 +17,10 @@ from farminsight_dashboard_backend.views import (
     SensorView,
     get_fpf_sensor_types,
     FpfView,
-    post_fpf_api_key
+    post_fpf_api_key,
+    post_camera,
+    CameraView,
+    get_camera_images
 )
 
 urlpatterns = [
@@ -30,6 +35,7 @@ urlpatterns = [
     path('organizations/<str:organization_id>', get_organization, name='get_organization'),
     path('memberships', MembershipView.as_view(), name='post_membership'),
     path('memberships/<str:membership_id>', MembershipView.as_view(), name='membership_operations'),
+    path('cameras/<str:camera_id>/images', get_camera_images, name='get_camera_snapshots'),
     path('sensors/<str:sensor_id>/measurements', get_sensor_data, name='get_sensor_data'),
     path('sensors', SensorView.as_view(), name='post_sensor'),
     path('sensors/<str:sensor_id>', SensorView.as_view(), name='sensor_operations'),
@@ -37,5 +43,9 @@ urlpatterns = [
     path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
     path('growing-cycles', post_growing_cycle, name='post_growing_cycle'),
     path('growing-cycles/<str:growing_cycle_id>', put_growing_cycle, name='put_growing_cycle'),
+    path('cameras', post_camera, name='post_camera'),
+    path('cameras/<str:camera_id>', CameraView.as_view(), name='camera_operations'),
 ]
+
+
 
