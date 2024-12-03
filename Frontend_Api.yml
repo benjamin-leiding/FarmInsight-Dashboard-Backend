@@ -1,3 +1,4 @@
+
 openapi: 3.0.3
 info:
   title: Swagger Farminsight Backend - Frontend Communication - OpenAPI 3.0
@@ -32,6 +33,8 @@ tags:
     description: Operations about Growing Cycle management
   - name: data
     description: FPF, Sensor and Camera data retrieveal
+  - name: auth
+    description: Authentification endpoints
 paths:
   /fpfs:
     post:
@@ -1205,6 +1208,23 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Image'
+  /websocket-token:
+    get:
+      tags:
+        - auth
+      summary: Websocket auth token
+      description: Returns single use auth token for websocket connect
+      operationId: getWebsocketToken
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
 components:
   schemas:
     Userprofile:
