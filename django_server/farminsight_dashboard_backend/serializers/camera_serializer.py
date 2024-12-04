@@ -1,11 +1,12 @@
 from rest_framework import serializers
 
 from django_server import settings
-from farminsight_dashboard_backend.models import Camera
+from farminsight_dashboard_backend.models import Camera, FPF
 from farminsight_dashboard_backend.serializers.image_serializer import ImageURLSerializer
 
 
 class CameraSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Camera
         fields = [
@@ -17,14 +18,13 @@ class CameraSerializer(serializers.ModelSerializer):
             'isActive',
             'intervalSeconds',
             'livestreamUrl',
-            'snapshotUrl',
+            'snapshotUrl'
         ]
 
-    def validate(self, data):
-        interval = data.get('intervalSeconds')
-        if interval <= 0:
-            raise serializers.ValidationError("The interval must be greater than 0.")
-        return data
+    def validate_intervalSeconds(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Interval must be a positive number.")
+        return value
 
 class CameraImageSerializer(serializers.ModelSerializer):
     images = ImageURLSerializer(many=True)
