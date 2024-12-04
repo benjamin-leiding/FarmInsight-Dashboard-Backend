@@ -64,7 +64,7 @@ class SensorLastValueSerializer(serializers.ModelSerializer):
             'lastMeasurement'
         ]
 
-    def get_measurement(self, obj):
+    def get_lastMeasurement(self, obj):
         from farminsight_dashboard_backend.services import InfluxDBManager
 
         return InfluxDBManager.get_instance().fetch_latest_sensor_measurements(
