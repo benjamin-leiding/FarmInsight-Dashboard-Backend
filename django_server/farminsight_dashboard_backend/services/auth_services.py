@@ -34,6 +34,8 @@ def get_auth_token():
 
 def valid_api_key_for_sensor(api_key: str, sensor_id: str) -> bool:
     sensor = Sensor.objects.get(id=sensor_id)
+    if sensor.FPF.apiKeyValidUntil is None:
+        return sensor.FPF.apiKey == api_key
     return sensor.FPF.apiKey == api_key and sensor.FPF.apiKeyValidUntil > timezone.now()
 
 

@@ -1,7 +1,9 @@
+import uuid
 from json import JSONDecodeError
-
 import requests
+from django.core.files import File
 from requests import RequestException
+from farminsight_dashboard_backend.models import Image
 
 
 
@@ -19,7 +21,7 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     fpf = get_fpf_by_id(fpf_id)
     url = f"{build_fpf_url(fpf.sensorServiceIp, endpoint)}"
     #token = get_auth_token()
-    token = ''
+    token = 'TOKEN'
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -39,6 +41,29 @@ def send_request_to_fpf(fpf_id, method, endpoint, data=None, params=None):
     except ValueError:
         raise Exception("Invalid JSON response from the FPF service.")
 
+def fetch_camera_snapshot(camera_id, snapshot_url):
+    """
+    Fetch a snapshot from the given snapshot URL of the camera and store it as a jpg file.
+    :param camera_id:
+    :param snapshot_url:
+    :return:
+    """
+    try:
+        response = requests.get(snapshot_url, stream=True)
+        if response.status_code == 200:
+
+            filename = f"{str(uuid.uuid4())}.jpg"
+            Image.objects.create(
+                camera_id=camera_id,
+                image=File(response.raw, name=filename)
+            )
+
+            return filename
+
+        else:
+            raise ValueError(f"Failed to fetch snapshot. HTTP {response.status_code}")
+    except Exception as e:
+        print(f"Error fetching snapshot for Camera {camera_id}: {e}")
 
 def build_fpf_url(fpf_address, endpoint):
     """

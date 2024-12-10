@@ -16,6 +16,7 @@ class GrowingCycleSerializer(serializers.ModelSerializer):
     def validate(self, data):
         start_date = data.get('startDate')
         end_date = data.get('endDate')
-        if start_date and end_date and start_date >= end_date:
-            raise serializers.ValidationError("Start date must be earlier than end date.")
+        if end_date is not None:
+            if start_date and end_date and start_date >= end_date:
+                raise serializers.ValidationError("Start date must be earlier than end date.")
         return data

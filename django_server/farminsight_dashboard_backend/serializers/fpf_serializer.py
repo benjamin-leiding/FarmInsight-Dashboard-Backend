@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from farminsight_dashboard_backend.models import FPF, Organization
-from farminsight_dashboard_backend.serializers.camera_serializer import CameraSerializer
+from farminsight_dashboard_backend.serializers.camera_serializer import CameraImageSerializer, CameraSerializer
 from farminsight_dashboard_backend.serializers.growing_cycle_serializer import GrowingCycleSerializer
-from farminsight_dashboard_backend.serializers.sensor_serializer import SensorSerializer
+from farminsight_dashboard_backend.serializers.sensor_serializer import SensorDataSerializer, SensorLastValueSerializer
 
 
 class FPFSerializer(serializers.ModelSerializer):
@@ -30,7 +30,7 @@ class FPFTechnicalKeySerializer(serializers.ModelSerializer):
 
 
 class FPFFullSerializer(serializers.ModelSerializer):
-    Sensors = SensorSerializer(many=True, source='sensors')
+    Sensors = SensorLastValueSerializer(many=True, source='sensors')
     Cameras = CameraSerializer(many=True, source='cameras')
     GrowingCycles = GrowingCycleSerializer(many=True, source='growingCycles')
 
@@ -46,5 +46,21 @@ class FPFFullSerializer(serializers.ModelSerializer):
             'Cameras',
             'GrowingCycles',
         ]
+        
+class FPFFullDataSerializer(serializers.ModelSerializer):
+    Sensors = SensorDataSerializer(many=True, source='sensors')
+    Cameras = CameraImageSerializer(many=True, source='cameras')
+    GrowingCycles = GrowingCycleSerializer(many=True, source='growingCycles')
 
-
+    class Meta:
+        model = FPF
+        fields = [
+            'id',
+            'name',
+            'isPublic',
+            'sensorServiceIp',
+            'address',
+            'Sensors',
+            'Cameras',
+            'GrowingCycles',
+        ]
