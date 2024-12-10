@@ -23,3 +23,9 @@ class SensorDBSchemaSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'additional_fields': {'required': False}
         }
+
+
+class PreviewSensorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Sensor
+        fields = ['name']
