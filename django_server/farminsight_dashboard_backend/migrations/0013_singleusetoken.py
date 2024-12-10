@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('farminsight_dashboard_backend', '0009_remove_fpf_cameraserviceip_camera_livestreamurl_and_more'),
+        ('farminsight_dashboard_backend', '0012_alter_growingcycle_enddate_alter_growingcycle_note'),
     ]
 
     operations = [
