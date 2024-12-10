@@ -46,7 +46,7 @@ class FPFFullSerializer(serializers.ModelSerializer):
             'Cameras',
             'GrowingCycles',
         ]
-
+        
 class FPFFullDataSerializer(serializers.ModelSerializer):
     Sensors = SensorDataSerializer(many=True, source='sensors')
     Cameras = CameraImageSerializer(many=True, source='cameras')
