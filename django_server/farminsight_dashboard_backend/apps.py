@@ -1,13 +1,11 @@
-from django.apps import AppConfig
-from django.db.utils import OperationalError
-from influxdb_client import InfluxDBClient
-from django.conf import settings
 import logging
-import requests
+import time
+from django.apps import AppConfig
 import os
 import threading
-
-logger = logging.getLogger(__name__)
+from django.db.utils import OperationalError
+from django.db.migrations.executor import MigrationExecutor
+from django.db import connections
 
 
 class FarminsightDashboardBackendConfig(AppConfig):
@@ -16,54 +14,55 @@ class FarminsightDashboardBackendConfig(AppConfig):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.log = logging.getLogger(__name__)
+        self.log = logging.getLogger('farminsight_dashboard_backend')
+
+    def initialize_app(self, max_retries=3, retry_interval=3):
+        """
+        :param max_retries: maximum amount of retries to connect to the database
+        :param retry_interval: interval of the retry
+        """
+        retry_count = 0
+        while retry_count < max_retries:
+            try:
+                if self.has_pending_migrations():
+                    self.log.warning(f"Pending migrations detected. Retrying in {retry_interval} seconds...")
+                    time.sleep(retry_interval)
+                    retry_count += 1
+                else:
+                    from farminsight_dashboard_backend.services import InfluxDBManager, CameraScheduler
+
+                    InfluxDBManager.get_instance().initialize_connection()
+                    CameraScheduler.get_instance().start()
+                    self.log.info("Started successfully.")
+                    break
+            except OperationalError as e:
+                self.log.error(f"Database not ready yet: {e}")
+                time.sleep(retry_interval)
+                retry_count += 1
+            except Exception as e:
+                self.log.error(f"Error checking migrations: {e}")
+                break
+        if retry_count == max_retries:
+            self.log.error("Max retries reached. App did not start.")
+
+    def has_pending_migrations(self) -> bool:
+        """
+        Check if there are any pending migrations.
+        :return: if there are pending migrations
+        """
+        try:
+            executor = MigrationExecutor(connections['default'])
+            targets = executor.loader.graph.leaf_nodes()
+            return executor.migration_plan(targets) != []
+
+        except Exception as e:
+            self.log.error(f"Error checking migrations: {e}")
+            return True  # Assume pending if there's an error
 
     def ready(self):
         """
-        Start a new thread to check for pending migrations and start the scheduler if ready
+        Start a new thread to check for pending migrations and start the app if ready
         """
         if os.environ.get('RUN_MAIN') == 'true':
-            threading.Thread(target=self.setup_influxdb, daemon=True).start()
+            threading.Thread(target=self.initialize_app, daemon=True).start()
 
-    def setup_influxdb(self):
-        """
-        Try to connect to the influxDB
-        """
-        try:
-            from .models import FPF
-
-            client = None
-            influxdb_settings = getattr(settings, 'INFLUXDB_CLIENT_SETTINGS', {})
-
-            if not influxdb_settings:
-                self.log.warning("InfluxDB settings not found. Skipping InfluxDB setup.")
-                return
-
-            try:
-                client = InfluxDBClient(url=influxdb_settings['url'],
-                                        token=influxdb_settings['token'],
-                                        org=influxdb_settings['org'])
-
-                bucket_api = client.buckets_api()
-
-                if not client.ping():
-                    raise ConnectionError("InfluxDB is not healthy or reachable.")
-
-                if not FPF.objects.exists():
-                    self.log.warning("Unable to find any FPFs in the database.")
-                    return
-
-                for fpf in FPF.objects.all():
-                    if not bucket_api.find_bucket_by_name(str(fpf.id)):
-                        self.log.info(f"Creating new bucket: {fpf.id}")
-                        bucket_api.create_bucket(bucket_name=str(fpf.id),
-                                                 org=influxdb_settings['org'])
-
-            except (requests.exceptions.RequestException, ConnectionError) as e:
-                self.log.warning(f"InfluxDB connection failed: {e}. Proceeding without InfluxDB.")
-
-            finally:
-                client.close()
-
-        except OperationalError:
-            self.log.warning("Database not ready. Skipping InfluxDB setup.")

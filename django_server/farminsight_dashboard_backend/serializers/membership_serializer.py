@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from farminsight_dashboard_backend.models import Membership, MembershipRole, Userprofile, Organization
+from .userprofile_serializer import UserprofileSerializer
 
 
 class MembershipSerializer(serializers.ModelSerializer):
@@ -29,3 +30,11 @@ class MembershipSerializer(serializers.ModelSerializer):
         if membership is not None:
             raise serializers.ValidationError("This user is already a member of the Organization.")
         return data
+
+
+class MembershipSerializerIncUserprofile(serializers.ModelSerializer):
+    userprofile = UserprofileSerializer(read_only=True, fields=('id', 'name', 'email'))
+
+    class Meta:
+        model = Membership
+        fields = ['id', 'membershipRole', 'createdAt', 'userprofile']

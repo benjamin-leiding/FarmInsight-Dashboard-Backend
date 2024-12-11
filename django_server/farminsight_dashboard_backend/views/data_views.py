@@ -1,10 +1,10 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from farminsight_dashboard_backend.serializers import DateRangeSerializer
-from ..services import create_fpf
-from ..services import get_all_fpf_data, get_all_sensor_data
+
+from django_server import settings
+from farminsight_dashboard_backend.serializers import DateRangeSerializer, FPFFullDataSerializer, ImageURLSerializer
+from farminsight_dashboard_backend.services import get_all_fpf_data, get_all_sensor_data, get_images_by_camera
 
 
 @api_view(['GET'])
@@ -24,8 +24,11 @@ def get_fpf_data(request, fpf_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    response = get_all_fpf_data(fpf_id, from_date, to_date)
-    return Response(response['data'], status=response['status'])
+    serializer = FPFFullDataSerializer(get_all_fpf_data(fpf_id), context={'from_date': from_date,
+                                                                          'to_date': to_date,
+                                                                          'request': request})
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -42,5 +45,23 @@ def get_sensor_data(request, sensor_id):
     from_date = serializer.validated_data.get('from_date')
     to_date = serializer.validated_data.get('to_date')
 
-    response = get_all_sensor_data(sensor_id, from_date, to_date)
-    return Response(response['data'], status=response['status'])
+    return Response(get_all_sensor_data(sensor_id, from_date, to_date))
+
+
+@api_view(['GET'])
+def get_camera_images(request, camera_id):
+    """
+    Get all images for a given camera in requested time range
+    :param request:
+    :param camera_id:
+    :return:
+    """
+    serializer = DateRangeSerializer(data=request.query_params)
+    serializer.is_valid(raise_exception=True)
+
+    from_date = serializer.validated_data.get('from_date')
+    to_date = serializer.validated_data.get('to_date')
+
+    images = get_images_by_camera(camera_id, from_date, to_date)
+
+    return Response(ImageURLSerializer(images, many=True, context={'request': request}).data, status=200)
