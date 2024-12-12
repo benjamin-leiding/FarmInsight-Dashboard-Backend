@@ -77,7 +77,7 @@ def post_camera(request):
     return Response(camera, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
-#@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated])
 def get_camera_livestream(request, camera_id):
     """
     Only member of the fpf's organization are allowed to stream.
@@ -89,8 +89,8 @@ def get_camera_livestream(request, camera_id):
     camera = get_active_camera_by_id(camera_id)
     livestream_url = camera.livestreamUrl
 
-    #if not is_member(request.user, get_fpf_by_id(str(camera.FPF_id)).organization.id):
-    #    return Response(status=status.HTTP_403_FORBIDDEN)
+    if not is_member(request.user, get_fpf_by_id(str(camera.FPF_id)).organization.id):
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     parsed_url = urlparse(livestream_url)
     scheme = parsed_url.scheme.lower()
