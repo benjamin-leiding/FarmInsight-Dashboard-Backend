@@ -64,4 +64,4 @@ def get_camera_images(request, camera_id):
 
     images = get_images_by_camera(camera_id, from_date, to_date)
 
-    return Response(ImageURLSerializer(images, many=True, context={'request': request}).data, status=200)
+    return Response(ImageURLSerializer(images, many=True).data, status=200)

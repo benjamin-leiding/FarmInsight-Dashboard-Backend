@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from django_server import settings
 from farminsight_dashboard_backend.models import FPF, Image
 from farminsight_dashboard_backend.serializers.sensor_serializer import PreviewSensorSerializer
 from farminsight_dashboard_backend.serializers.organization_serializer import OrganizationSerializer
@@ -22,4 +24,4 @@ class FPFPreviewSerializer(serializers.ModelSerializer):
                     newest_image = image
             except :
                 pass
-        return newest_image.image.url if newest_image is not None else None
+        return f"{settings.SITE_URL}{settings.MEDIA_URL}{newest_image.image.name}" if newest_image is not None else None

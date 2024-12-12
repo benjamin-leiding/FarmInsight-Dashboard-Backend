@@ -15,7 +15,4 @@ class ImageURLSerializer(serializers.ModelSerializer):
         ]
 
     def get_url(self, obj):
-        request = self.context.get('request')
-        if not request:
-            raise ValueError("Request context is not available in the serializer.")
-        return f"{request.build_absolute_uri(settings.MEDIA_URL)}{obj.image.name}"
+        return f"{settings.SITE_URL}{settings.MEDIA_URL}{obj.image.name}"

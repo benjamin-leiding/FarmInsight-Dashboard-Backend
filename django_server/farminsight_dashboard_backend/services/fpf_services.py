@@ -71,8 +71,9 @@ def get_visible_fpf_preview(user: Userprofile=None) -> FPFPreviewSerializer:
     fpfs = set()
     if user:
         memberships = get_memberships(user)
-        fpfs |= set([fpf for membership in memberships for fpf in membership.organization.fpf_set])
-
+        fpfs |= set(
+            fpf for membership in memberships for fpf in membership.organization.fpf_set.all()
+        )
     public_fpfs = FPF.objects.filter(isPublic=True).all()
     fpfs |= set([fpf for fpf in public_fpfs])
 
