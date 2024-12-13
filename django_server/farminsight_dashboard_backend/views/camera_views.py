@@ -9,7 +9,7 @@ from farminsight_dashboard_backend.serializers.camera_serializer import CameraSe
 from farminsight_dashboard_backend.services import get_active_camera_by_id, update_camera, delete_camera, \
     get_fpf_by_id, create_camera, is_member, get_camera_by_id
 from farminsight_dashboard_backend.services.fpf_streaming_services import rtsp_stream, http_stream
-
+from oauth2_provider.models import AccessToken
 
 class CameraView(views.APIView):
     permission_classes = [IsAuthenticated]
@@ -77,39 +77,50 @@ def post_camera(request):
     return Response(camera, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def get_camera_livestream(request, camera_id):
     """
-    Only member of the fpf's organization are allowed to stream.
+    Authenticated via Query Param Bearer token
+    Only member of the FPFs organization are allowed to stream.
     User http or rtsp streaming protocol (depending on the camera livestream url) to stream a video feed.
     :param request:
     :param camera_id:
     :return:
     """
+    token = request.GET.get('token')
+
+    if not token:
+        return Response({"error": "Token is required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    try:
+        access_token = AccessToken.objects.get(token=token)
+
+        if access_token.is_expired():
+            return Response({"error": "Token has expired"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    except AccessToken.DoesNotExist:
+        return Response({"error": "Token not found"}, status=status.HTTP_401_UNAUTHORIZED)
+
     camera = get_active_camera_by_id(camera_id)
     livestream_url = camera.livestreamUrl
 
-    if not is_member(request.user, get_fpf_by_id(str(camera.FPF_id)).organization.id):
+    if not is_member(access_token.user, get_fpf_by_id(str(camera.FPF_id)).organization.id):
         return Response(status=status.HTTP_403_FORBIDDEN)
 
     parsed_url = urlparse(livestream_url)
     scheme = parsed_url.scheme.lower()
 
-    if scheme == 'http' or scheme == 'https':
+    if scheme in ['http', 'https']:
         return StreamingHttpResponse(
             http_stream(livestream_url),
-            content_type="video/mp4"
+            content_type="multipart/x-mixed-replace; boundary=frame"
         )
-
     elif scheme == 'rtsp':
         return StreamingHttpResponse(
             rtsp_stream(livestream_url),
-            content_type='multipart/x-mixed-replace; boundary=frame'
+            content_type="multipart/x-mixed-replace; boundary=frame"
         )
-
     else:
-        return StreamingHttpResponse(
-            f"Unsupported protocol: {scheme}".encode("utf-8"),
-            status=400,
-            content_type="text/plain"
+        return Response(
+            {"error": f"Unsupported protocol: {scheme}"},
+            status=400
         )
