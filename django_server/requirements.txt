@@ -12,4 +12,3 @@ asgiref~=3.8.1
 daphne~=4.1.2
 apscheduler~=3.10.4
 opencv-python~=4.10.0.84
-djangorestframework-simplejwt-5.3.1~=5.3.1
