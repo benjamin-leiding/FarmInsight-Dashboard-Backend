@@ -7,14 +7,18 @@ from farminsight_dashboard_backend.models import FPF
 import requests
 import logging
 import threading
+import time
 
 
 class InfluxDBManager:
     """
     InfluxDBManager to manage all interactions with the influx database, implemented as a Singleton.
+    RETRY_TIMEOUT in seconds.
     """
     _instance = None
     _lock = threading.Lock()
+
+    RETRY_TIMEOUT = 10
 
     @classmethod
     def get_instance(cls):
@@ -34,7 +38,24 @@ class InfluxDBManager:
             self.influxdb_settings = getattr(settings, 'INFLUXDB_CLIENT_SETTINGS', {})
             self.client = None
             self.log = logging.getLogger("farminsight_dashboard_backend")
+            self._last_connection_attempt = 0
             self._initialized = True
+
+    def _retry_connection(method):
+        """Decorator to ensure a valid connection before executing a method."""
+        def wrapper(self, *args, **kwargs):
+            if not self.client:
+                now = time.time()
+                if now - self._last_connection_attempt > self.RETRY_TIMEOUT:
+                    self._last_connection_attempt = now
+                    self.initialize_connection()
+                else:
+                    self.log.warning("Skipping connection retry due to recent failed attempt.")
+            if not self.client:
+                raise InfluxDBNoConnectionException("No valid InfluxDB connection available.")
+            return method(self, *args, **kwargs)
+
+        return wrapper
 
     def initialize_connection(self):
         """
@@ -66,26 +87,24 @@ class InfluxDBManager:
         Ensure each FPF in SQLite has a corresponding bucket in InfluxDB.
         """
         try:
-            if not self.client:
-                self.log.warning("InfluxDB client is not initialized.")
-                return
+            if self.client:
+                bucket_api = self.client.buckets_api()
+                fpf_objects = FPF.objects.all()
 
-            bucket_api = self.client.buckets_api()
-            fpf_objects = FPF.objects.all()
+                if not fpf_objects.exists():
+                    self.log.warning("No FPFs found in the database.")
+                    return
 
-            if not fpf_objects.exists():
-                self.log.warning("No FPFs found in the database.")
-                return
-
-            for fpf in fpf_objects:
-                bucket_name = str(fpf.id)
-                if not bucket_api.find_bucket_by_name(bucket_name):
-                    self.log.info(f"Creating new bucket: {bucket_name}")
-                    bucket_api.create_bucket(bucket_name=bucket_name, org=self.influxdb_settings['org'])
+                for fpf in fpf_objects:
+                    bucket_name = str(fpf.id)
+                    if not bucket_api.find_bucket_by_name(bucket_name):
+                        self.log.info(f"Creating new bucket: {bucket_name}")
+                        bucket_api.create_bucket(bucket_name=bucket_name, org=self.influxdb_settings['org'])
 
         except Exception as e:
             self.log.error(f"Failed to sync FPF buckets with InfluxDB: {e}")
 
+    @_retry_connection
     def fetch_sensor_measurements(self, fpf_id: str, sensor_ids: list, from_date: str, to_date: str) -> dict:
         """
         Queries InfluxDB for measurements within the given date range for multiple sensors.
@@ -95,11 +114,6 @@ class InfluxDBManager:
         :param to_date: End date in ISO 8601 format.
         :return: Dictionary with sensor IDs as keys, each containing a list of measurements.
         """
-
-        if not self.client:
-            self.log.error("InfluxDB client is not initialized.")
-            raise InfluxDBNoConnectionException("InfluxDB client is not initialized.")
-
         try:
             query_api = self.client.query_api()
 
@@ -125,15 +139,15 @@ class InfluxDBManager:
                     })
 
         except requests.exceptions.ConnectionError as e:
-            self.log.error(f"Failed to connect to InfluxDB: {e}")
             raise InfluxDBNoConnectionException("Unable to connect to InfluxDB.")
 
         except Exception as e:
-            self.log.error(f"Failed to fetch sensor measurements from InfluxDB: {e}")
+            self.client = None
             raise InfluxDBQueryException(str(e))
 
         return measurements
 
+    @_retry_connection
     def fetch_latest_sensor_measurements(self, fpf_id: str, sensor_ids: list) -> dict:
         """
         Queries InfluxDB for the latest measurement for each sensor.
@@ -141,11 +155,6 @@ class InfluxDBManager:
         :param sensor_ids: List of sensor IDs to query data for.
         :return: Dictionary with sensor IDs as keys, each containing the latest measurement.
         """
-
-        if not self.client:
-            self.log.error("InfluxDB client is not initialized.")
-            raise InfluxDBNoConnectionException("InfluxDB client is not initialized.")
-
         try:
             query_api = self.client.query_api()
 
@@ -173,29 +182,39 @@ class InfluxDBManager:
                     }
 
         except requests.exceptions.ConnectionError as e:
+            self.client = None
             self.log.error(f"Failed to connect to InfluxDB: {e}")
             raise InfluxDBNoConnectionException("Unable to connect to InfluxDB.")
 
         except Exception as e:
-            self.log.error(f"Failed to fetch latest sensor measurements from InfluxDB: {e}")
             raise InfluxDBQueryException(str(e))
 
         return latest_measurements
 
+    @_retry_connection
     def write_sensor_measurements(self, fpf_id: str, sensor_id: str, measurements):
-        write_api = self.client.write_api(write_options=SYNCHRONOUS)
+        """
+        Writes measurements for a given sensor to InfluxDB.
+        :param fpf_id: The ID of the FPF (used as the bucket name in InfluxDB).
+        """
+        try:
+            write_api = self.client.write_api(write_options=SYNCHRONOUS)
 
-        points = []
-        for measurement in measurements:
-            point = (
-                Point("SensorData")
-                .tag("sensorId", str(sensor_id))
-                .field("value", float(measurement['value']))
-                .time(measurement['measuredAt'], WritePrecision.NS)
-            )
-            points.append(point)
+            points = []
+            for measurement in measurements:
+                point = (
+                    Point("SensorData")
+                    .tag("sensorId", str(sensor_id))
+                    .field("value", float(measurement['value']))
+                    .time(measurement['measuredAt'], WritePrecision.NS)
+                )
+                points.append(point)
 
-        write_api.write(bucket=fpf_id, record=points)
+            write_api.write(bucket=fpf_id, record=points)
+
+        except Exception as e:
+            self.client = None
+            raise InfluxDBQueryException(str(e))
 
     def close(self):
         """Close the InfluxDB client if it's open."""
