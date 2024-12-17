@@ -46,6 +46,10 @@ CSRF_TRUSTED_ORIGINS=http://localhost:3000
 CORS_ALLOWED_ORIGINS=http://localhost:3000
 
 RESOURCE_SERVER_INTROSPECTION_URL=https://development-isse-identityserver.azurewebsites.net/connect/introspect
+
+AUTH_SERVICE_URL=URL/connect/token
+CLIENT_ID=client_id
+CLIENT_SECRET=client_secret
 ```
 
 #### Docker Setup

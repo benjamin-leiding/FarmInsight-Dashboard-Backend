@@ -78,10 +78,7 @@ class SensorView(APIView):
         except Exception as e:
             raise Exception(f"Unable to create sensor at FPF. {e}")
 
-        # Safe the sensor in local db
-        create_sensor(sensor)
-
-        return Response(status=status.HTTP_200_OK)
+        return Response(create_sensor(sensor), status=status.HTTP_200_OK)
 
     def put(self, request, sensor_id):
         """

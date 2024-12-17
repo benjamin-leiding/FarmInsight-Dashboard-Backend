@@ -53,6 +53,7 @@ CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(",")
 # Camera snapshot storage config
 MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+SITE_URL = "http://localhost:8000"
 
 # Application definition
 
