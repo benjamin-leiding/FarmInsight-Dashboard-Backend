@@ -13,7 +13,7 @@ import uuid
 
 
 class SensorView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, sensor_id):
         """
@@ -114,7 +114,7 @@ class SensorView(APIView):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def get_fpf_sensor_types(request, fpf_id):
     """
     Verify that the fpf exists

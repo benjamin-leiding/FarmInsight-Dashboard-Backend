@@ -12,7 +12,7 @@ from farminsight_dashboard_backend.services.fpf_streaming_services import rtsp_s
 from oauth2_provider.models import AccessToken
 
 class CameraView(views.APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, camera_id):
         """

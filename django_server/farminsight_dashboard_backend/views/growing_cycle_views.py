@@ -8,14 +8,14 @@ from farminsight_dashboard_backend.services import create_growing_cycle, update_
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def post_growing_cycle(request):
     growing_cycle = create_growing_cycle(request.data, request.user)
     return Response(growing_cycle.data, status=status.HTTP_201_CREATED)
 
 
 class GrowingCycleViews(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def put(self, request, growing_cycle_id):
         growing_cycle = update_growing_cycle(growing_cycle_id, request.data, request.user)

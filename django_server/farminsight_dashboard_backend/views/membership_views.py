@@ -12,7 +12,7 @@ from farminsight_dashboard_backend.utils import is_valid_uuid
 
 
 class MembershipView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def post(self, request):
         """

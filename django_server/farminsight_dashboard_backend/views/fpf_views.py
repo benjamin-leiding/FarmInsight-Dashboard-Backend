@@ -9,12 +9,12 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 
 class FpfView(views.APIView):
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            return [IsAuthenticated()]
-        elif self.request.method == 'GET':
-            return [AllowAny()]  # No authentication required for GET
-        return super().get_permissions()
+    #def get_permissions(self):
+    #    if self.request.method == 'POST':
+    #        return [IsAuthenticated()]
+    #    elif self.request.method == 'GET':
+    #        return [AllowAny()]  # No authentication required for GET
+    #    return super().get_permissions()
 
     def post(self, request):
         serializer = create_fpf(request.data)
