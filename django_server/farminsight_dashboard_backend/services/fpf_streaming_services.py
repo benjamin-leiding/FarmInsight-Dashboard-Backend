@@ -27,7 +27,7 @@ async def http_stream(livestream_url:str):
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
             # Async sleep for frame rate control
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.01)
     finally:
         camera.release()
         print("Camera released.")
@@ -52,7 +52,7 @@ async def rtsp_stream(livestream_url:str):
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n'
             )
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(0.01)
 
     finally:
         cap.release()

@@ -7,7 +7,7 @@ from farminsight_dashboard_backend.services import create_single_use_token
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+#@permission_classes([IsAuthenticated])
 def get_websocket_token(request):
     token = create_single_use_token()
     return Response({'token': token}, status=status.HTTP_200_OK)
