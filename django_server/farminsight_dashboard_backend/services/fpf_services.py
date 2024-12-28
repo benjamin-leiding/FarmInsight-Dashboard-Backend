@@ -1,10 +1,13 @@
+import datetime
+
+from django.conf import settings
+from django.utils import timezone
+
 from farminsight_dashboard_backend.exceptions import NotFoundException
 from farminsight_dashboard_backend.models import FPF, Userprofile
 from farminsight_dashboard_backend.serializers import FPFSerializer, FPFPreviewSerializer
 from farminsight_dashboard_backend.utils import generate_random_api_key
 from .membership_services import get_memberships
-import datetime
-from django.utils import timezone
 
 
 def create_fpf(data) -> FPFSerializer:
@@ -63,7 +66,8 @@ def update_fpf_api_key(fpf_id):
     send_request_to_fpf(fpf_id, 'post', '/api/api-keys', {"apiKey": key})
     fpf = FPF.objects.get(id=fpf_id)
     fpf.apiKey = key
-    fpf.apiKeyValidUntil = timezone.now() + datetime.timedelta(days=30)
+    if settings.API_KEY_VALIDATION_DURATION_DAYS > 0:
+        fpf.apiKeyValidUntil = timezone.now() + datetime.timedelta(days=settings.API_KEY_VALIDATION_DURATION_DAYS)
     fpf.save()
     return
 
