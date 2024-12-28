@@ -830,7 +830,7 @@ paths:
           description: Forbidden
         '404':
           description: GrowingCycle not found
-  /growing-cycles/{fpfId}:
+  /growing-cycles/list/{fpfId}:
     get:
       tags:
         - cycle
@@ -947,7 +947,7 @@ paths:
           description: Forbidden
         '404':
           description: Harvest not found
-  /harvests/{growingCycleId}:
+  /harvests/list/{growingCycleId}:
     get:
       tags:
         - harvest
