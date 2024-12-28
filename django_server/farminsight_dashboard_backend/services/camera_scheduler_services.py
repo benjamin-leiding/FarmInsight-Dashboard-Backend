@@ -1,8 +1,10 @@
 import logging
 import threading
+from datetime import timedelta
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
+from django.utils import timezone
 
 from farminsight_dashboard_backend.models import Camera
 from farminsight_dashboard_backend.services import get_camera_by_id
@@ -56,6 +58,7 @@ class CameraScheduler:
                     args=[camera.id, camera.snapshotUrl],
                     id=f"camera_{camera.id}_snapshot",
                     replace_existing=True,
+                    next_run_time=timezone.now() + timedelta(seconds=1)
                 )
                 self.log.info(f"Camera {camera.id} snapshot task scheduled with interval {interval} seconds.")
         except Camera.DoesNotExist:
