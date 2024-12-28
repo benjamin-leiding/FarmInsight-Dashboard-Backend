@@ -1,4 +1,5 @@
 
+
 openapi: 3.0.3
 info:
   title: Swagger Farminsight Backend - Frontend Communication - OpenAPI 3.0
@@ -31,6 +32,8 @@ tags:
     description: Operations about Sensor management
   - name: cycle
     description: Operations about Growing Cycle management
+  - name: harvest
+    description: Operations about Harvest management
   - name: data
     description: FPF, Sensor and Camera data retrieveal
   - name: auth
@@ -769,31 +772,6 @@ paths:
         '422':
           description: Validation exception
   /growing-cycles/{growingCycleId}:
-    get:
-      tags:
-        - cycle
-      summary: Find GrowingCycle by ID
-      description: Returns a single GrowingCycle
-      operationId: getGrowingCycleById
-      parameters:
-        - name: growingCycleId
-          in: path
-          description: ID of GrowingCycle to return
-          required: true
-          schema:
-            type: string
-            format: uuid
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GrowingCycle'
-        '403':
-          description: Forbidden
-        '404':
-          description: GrowingCycle not found
     put:
       tags:
         - cycle
@@ -848,6 +826,151 @@ paths:
             type: string
             format: uuid
       responses:
+        '403':
+          description: Forbidden
+        '404':
+          description: GrowingCycle not found
+  /growing-cycles/{fpfId}:
+    get:
+      tags:
+        - cycle
+      summary: Find GrowingCycles by FPFId
+      description: Returns a list of GrowingCycles
+      operationId: getGrowingCyclesByFPFId
+      parameters:
+        - name: fpfId
+          in: path
+          description: ID of FPF the growing-cycles belong to
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GrowingCycle'
+        '403':
+          description: Forbidden
+        '404':
+          description: GrowingCycle not found
+  /harvests:
+    post:
+      tags:
+        - harvest
+      summary: Add a new Harvest to the GrowingCycle
+      description: Add a new Harvest to the GrowingCycle
+      operationId: addHarvest
+      requestBody:
+        description: Create a new Harvest in the GrowingCycle
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Harvest'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Harvest'
+        '403':
+          description: Forbidden
+        '422':
+          description: Validation exception
+  /harvests/{harvestId}:
+    put:
+      tags:
+        - harvest
+      summary: Update an existing Harvest
+      description: Update an existing Harvest by Id
+      operationId: updateHarvest
+      parameters:
+        - name: harvestId
+          in: path
+          description: Harvest id to update
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Update an existing Harvest
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Harvest'
+                - type: object
+                  properties:
+                    id:
+                      readOnly: true
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Harvest'
+        '403':
+          description: Forbidden
+        '404':
+          description: Harvest not found
+        '422':
+          description: Validation exception
+    delete:
+      tags:
+        - harvest
+      summary: Deletes Harvest
+      description: delete Harvest
+      operationId: deleteHarvest
+      parameters:
+        - name: harvestId
+          in: path
+          description: HarvestId to delete
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '403':
+          description: Forbidden
+        '404':
+          description: Harvest not found
+  /harvests/{growingCycleId}:
+    get:
+      tags:
+        - harvest
+      summary: Find Harvests by GrowingCycleId
+      description: Returns a list of Harvsts 
+      operationId: getHarvestsByGrowingCycleId
+      parameters:
+        - name: growingCycleId
+          in: path
+          description: GrowingCycleId to return harvests for
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Harvest'
         '403':
           description: Forbidden
         '404':
@@ -1365,6 +1488,26 @@ components:
           format: date-time
         plants:
           type: string
+        note:
+          type: string
+        harvests:
+          type: array
+          items:
+            $ref: '#/components/schemas/Harvest'
+    Harvest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        growingCycleId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date-time
+        amountInKg:
+          type: number
         note:
           type: string
     FPFData:
