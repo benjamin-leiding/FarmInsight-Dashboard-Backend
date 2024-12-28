@@ -2,7 +2,7 @@ from rest_framework import serializers
 from farminsight_dashboard_backend.models import Harvest, GrowingCycle
 
 
-class GrowingCycleSerializer(serializers.ModelSerializer):
+class HarvestSerializer(serializers.ModelSerializer):
     growingCycleId = serializers.PrimaryKeyRelatedField(
         source='growingCycle',
         queryset=GrowingCycle.objects.all()

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from farminsight_dashboard_backend.models import GrowingCycle, FPF
+from farminsight_dashboard_backend.serializers import HarvestSerializer
 
 
 class GrowingCycleSerializer(serializers.ModelSerializer):
@@ -7,11 +8,12 @@ class GrowingCycleSerializer(serializers.ModelSerializer):
         source='FPF',
         queryset=FPF.objects.all()
     )
+    harvests = HarvestSerializer(many=True, source='harvests')
 
     class Meta:
         model = GrowingCycle
         read_only_fields = ('id',)
-        fields = ['id', 'startDate', 'endDate', 'plants', 'note', 'fpfId']
+        fields = ['id', 'startDate', 'endDate', 'plants', 'note', 'fpfId', 'harvests']
 
     def validate(self, data):
         start_date = data.get('startDate')
