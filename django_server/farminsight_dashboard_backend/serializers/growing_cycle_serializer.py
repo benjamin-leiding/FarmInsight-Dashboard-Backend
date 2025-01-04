@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from farminsight_dashboard_backend.models import GrowingCycle, FPF
-from farminsight_dashboard_backend.serializers import HarvestSerializer
+from .harvest_serializer import HarvestSerializer
 
 
 class GrowingCycleSerializer(serializers.ModelSerializer):
