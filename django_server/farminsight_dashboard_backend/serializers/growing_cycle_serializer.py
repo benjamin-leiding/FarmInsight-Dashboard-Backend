@@ -8,7 +8,7 @@ class GrowingCycleSerializer(serializers.ModelSerializer):
         source='FPF',
         queryset=FPF.objects.all()
     )
-    harvests = HarvestSerializer(many=True, source='harvests')
+    harvests = HarvestSerializer(many=True, read_only=True)
 
     class Meta:
         model = GrowingCycle
