@@ -67,10 +67,13 @@ class SensorLastValueSerializer(serializers.ModelSerializer):
     def get_lastMeasurement(self, obj):
         from farminsight_dashboard_backend.services import InfluxDBManager
 
-        return InfluxDBManager.get_instance().fetch_latest_sensor_measurements(
-            fpf_id=obj.FPF.id,
-            sensor_ids=[str(obj.id)],
-        ).get(str(obj.id), [])
+        try:
+            return InfluxDBManager.get_instance().fetch_latest_sensor_measurements(
+                fpf_id=obj.FPF.id,
+                sensor_ids=[str(obj.id)],
+            ).get(str(obj.id), [])
+        except Exception as e:
+            return {'error': 'Could not fetch last measurement.'}
 
 class SensorDBSchemaSerializer(serializers.ModelSerializer):
     class Meta:
