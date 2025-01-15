@@ -22,6 +22,12 @@ class FPFSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"name":"This name is already taken for this organization"})
         return data
 
+class FPFFunctionalSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = FPF
+        read_only_fields = ('id',)
+        fields = ('id', 'name', 'isPublic', 'sensorServiceIp', 'address')
 
 class FPFTechnicalKeySerializer(serializers.ModelSerializer):
     class Meta:

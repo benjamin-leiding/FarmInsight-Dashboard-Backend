@@ -1,6 +1,6 @@
 from farminsight_dashboard_backend.serializers import FPFFullSerializer
 from farminsight_dashboard_backend.services import create_fpf, get_fpf_by_id, update_fpf_api_key, \
-    get_visible_fpf_preview, is_member, get_organization_by_fpf_id
+    get_visible_fpf_preview, is_member, get_organization_by_fpf_id, update_fpf
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,6 +15,16 @@ class FpfView(views.APIView):
         elif self.request.method == 'GET':
             return [AllowAny()]  # No authentication required for GET
         return super().get_permissions()
+
+    def put(self, request, fpf_id):
+        """
+        Only an Admin or a SysAdmin can update an FPF
+        :param request:
+        :param fpf_id:
+        :return:
+        """
+        fpf = update_fpf(fpf_id, request.data, request.user)
+        return Response(fpf.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = create_fpf(request.data)

@@ -37,10 +37,12 @@ class CameraView(views.APIView):
 
         old_interval = get_camera_by_id(camera_id).intervalSeconds
 
+        # Update the camera
         camera = update_camera(camera_id, serializer.data)
 
+        # Update the scheduler
         if camera.intervalSeconds != old_interval:
-            CameraScheduler.get_instance().add_camera_job(camera.id)
+            CameraScheduler.get_instance().reschedule_camera_job(camera.id, camera.intervalSeconds)
 
         return Response(CameraSerializer(camera).data, status=status.HTTP_200_OK)
 

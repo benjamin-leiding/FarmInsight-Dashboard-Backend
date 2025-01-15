@@ -1,4 +1,4 @@
-from .fpf_services import create_fpf, get_fpf_by_id, update_fpf_api_key, is_user_part_of_fpf, get_visible_fpf_preview
+from .fpf_services import create_fpf, update_fpf, get_fpf_by_id, update_fpf_api_key, is_user_part_of_fpf, get_visible_fpf_preview
 from .organization_services import create_organization, get_organization_by_id, get_organization_by_fpf_id, update_organization
 from .measurement_services import store_measurements_in_influx
 from .membership_services import create_membership, get_memberships, update_membership, remove_membership, is_member, get_memberships_by_organization
