@@ -27,6 +27,6 @@ class HarvestEditViews(APIView):
 
 
 @api_view(['GET'])
-def get_harvests(request, fpf_id):
-    serializer = get_harvests_by_growing_cycle_id(fpf_id)
+def get_harvests(request, growing_cycle_id):
+    serializer = get_harvests_by_growing_cycle_id(growing_cycle_id)
     return Response(serializer.data, status=status.HTTP_200_OK)
