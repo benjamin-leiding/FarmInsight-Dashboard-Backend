@@ -217,3 +217,6 @@ REST_FRAMEWORK = {
 }
 
 URL_PREFIX = env('URL_PREFIX', default='api/')
+
+# 0 or negative for indefinite duration
+API_KEY_VALIDATION_DURATION_DAYS = int(env('API_KEY_VALIDATION_DURATION_DAYS', default='30'))

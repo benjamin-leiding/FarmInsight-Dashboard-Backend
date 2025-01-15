@@ -9,3 +9,4 @@ from .growing_cycle_serializer import GrowingCycleSerializer
 from .camera_serializer import CameraSerializer, CameraImageSerializer
 from .preview_serializer import FPFPreviewSerializer
 from .image_serializer import ImageURLSerializer
+from .harvest_serializer import HarvestSerializer
