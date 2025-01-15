@@ -1,4 +1,4 @@
-"""import base64
+import base64
 import logging
 import http.client
 from datetime import datetime, timedelta
@@ -22,6 +22,7 @@ class CustomOAuth2Validator(OAuth2Validator):
     def _get_token_from_authentication_server(
             self, token, introspection_url, introspection_token, introspection_credentials
     ):
+        """
         Use external introspection endpoint to "crack open" the token.
         :param introspection_url: introspection endpoint URL
         :param introspection_token: Bearer token
@@ -35,7 +36,7 @@ class CustomOAuth2Validator(OAuth2Validator):
         If the resulting access_token identifies a username (e.g. Authorization Code grant), add
         that user to the UserModel. Also cache the access_token up until its expiry time or a
         configured maximum time.
-
+        """
 
         headers = None
         if introspection_token:
@@ -102,49 +103,3 @@ class CustomOAuth2Validator(OAuth2Validator):
             )
 
             return access_token
-"""
-
-from django.conf import settings
-from django.contrib.auth import get_user_model
-from oauth2_provider.models import get_access_token_model
-from oauth2_provider.oauth2_validators import OAuth2Validator
-from datetime import datetime, timedelta
-from django.utils.timezone import make_aware
-
-AccessToken = get_access_token_model()
-UserModel = get_user_model()
-
-class CustomOAuth2Validator(OAuth2Validator):
-    MOCK_TOKEN = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjlFREE4MDY3Qzk0ODFBRkU4QjY1QjNGQThBMjZCRTY3IiwidHlwIjoiYXQrand0In0.eyJpc3MiOiJodHRwczovL2RldmVsb3BtZW50LWlzc2UtaWRlbnRpdHlzZXJ2ZXIuYXp1cmV3ZWJzaXRlcy5uZXQiLCJuYmYiOjE3MzQwODA1NzEsImlhdCI6MTczNDA4MDU3MSwiZXhwIjoxNzM0MDg0MTcxLCJhdWQiOiJodHRwczovL2RldmVsb3BtZW50LWlzc2UtaWRlbnRpdHlzZXJ2ZXIuYXp1cmV3ZWJzaXRlcy5uZXQvcmVzb3VyY2VzIiwic2NvcGUiOlsib3BlbmlkIl0sImFtciI6WyJwd2QiXSwiY2xpZW50X2lkIjoiaW50ZXJhY3RpdmUiLCJzdWIiOiIwOWNmOWM2Zi1mYTU2LTRmYjItYjg1Ni1hYTM1OGYzNmNiNjAiLCJhdXRoX3RpbWUiOjE3MzQwNzgyMzcsImlkcCI6ImxvY2FsIiwiZW1haWwiOiJtYXIucGV0ZXJAb3N0ZmFsaWEuZGUiLCJuYW1lIjoibWFyLnBldGVyQG9zdGZhbGlhLmRlIiwiaWQiOiIwOWNmOWM2Zi1mYTU2LTRmYjItYjg1Ni1hYTM1OGYzNmNiNjAiLCJzaWQiOiIyRjk4QkU4RjI0NkNFOUQ2MTI3MTJBMEU5MkI5MzczNCIsImp0aSI6IjM5RTI3QTk1MzVGNDRCNjk0RDdBRUU2ODc4ODZEMjc2In0.Ai4Ccz4R2krFh8ew2F-Fc9ruNyVOqSi0YbdDUIC6nRnN_YeVvsLjviDC_HfD0-n1mgy91ODSlUxBYW0DFevAwaksk6t2USQZfy9lH8AVdzI2pSpfbUqXIWhi7u9JQ16T6_t7i5QzhARgbrfLtk-4j45uijfqNDnJ1_RmLIkDGhHRjGoXJh9neo7I9lFvioSZ-MP3gYOD8uknQGg-WIliqTsiVBmxy-YsBwq_qKG1qotWzavvH76T1jkEzJAom2GrxYfZViV6SFfq_dYqkUWNXylgP4N34ZdSP8Q_yZk2n-cPgqKy4S3MVQwpiv5Nd0xr88IVE9MBBq6TggptD5xG1w"  # Define your mock token value
-
-    def _get_token_from_authentication_server(
-            self, token, introspection_url, introspection_token, introspection_credentials
-    ):
-        """
-        Extended to handle a mock token for testing purposes.
-        """
-        # Check if the provided token matches the mock token
-        if token == self.MOCK_TOKEN:
-            print("Mock token detected. Injecting mock user.")
-            user, _ = UserModel.objects.get_or_create(
-                **{UserModel.USERNAME_FIELD: "09cf9c6ffa564fb2b856aa358f36cb60", UserModel.EMAIL_FIELD: "mar.peter@ostfalia.de"})
-
-
-            # Create a fake access token instance
-            expires = make_aware(datetime.now() + timedelta(hours=1))  # 1 hour expiry
-            access_token, _created = AccessToken.objects.update_or_create(
-                token=self.MOCK_TOKEN,
-                defaults={
-                    "user": user,
-                    "application": None,
-                    "scope": "read write",  # Mock scopes
-                    "expires": expires,
-                },
-            )
-
-            return access_token
-
-        # If it's not the mock token, use the original behavior
-        return super()._get_token_from_authentication_server(
-            token, introspection_url, introspection_token, introspection_credentials
-        )
