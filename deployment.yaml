@@ -32,6 +32,8 @@ spec:
               readOnly: true
             - name: farminsight-backend-sqlite-pv
               mountPath: /app/database
+            - name: farminsight-backend-image-pv
+              mountPath: /app/images
       volumes:
       - name: farminsight-env
         configMap:
@@ -42,3 +44,6 @@ spec:
       - name: farminsight-backend-sqlite-pv
         persistentVolumeClaim:
           claimName: farminsight-backend-sqlite-pvc
+      - name: farminsight-backend-image-pv
+        persistentVolumeClaim:
+          claimName: farminsight-backend-image-pvc
