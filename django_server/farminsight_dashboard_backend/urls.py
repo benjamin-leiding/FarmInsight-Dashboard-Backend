@@ -9,7 +9,7 @@ from farminsight_dashboard_backend.views import (
     get_fpf_data,
     get_sensor_data,
     post_growing_cycle,
-    GrowingCycleViews,
+    GrowingCycleEditViews,
     MembershipView,
     SensorView,
     get_fpf_sensor_types,
@@ -21,7 +21,11 @@ from farminsight_dashboard_backend.views import (
     CameraView,
     get_camera_images,
     get_camera_livestream,
-    OrganizationView
+    OrganizationView,
+    get_growing_cycles,
+    post_harvest,
+    HarvestEditViews,
+    get_harvests
 )
 
 urlpatterns = [
@@ -43,11 +47,15 @@ urlpatterns = [
     path('sensors/types/available/<str:fpf_id>', get_fpf_sensor_types, name='get_fpf_sensor_types'),
     path('measurements/<str:sensor_id>', MeasurementView.as_view(), name='sensor-measurements'),
     path('growing-cycles', post_growing_cycle, name='post_growing_cycle'),
-    path('growing-cycles/<str:growing_cycle_id>', GrowingCycleViews.as_view(), name='growing_cycle_edits'),
+    path('growing-cycles/<str:growing_cycle_id>', GrowingCycleEditViews.as_view(), name='growing_cycle_edits'),
+    path('growing-cycles/list/<str:fpf_id>', get_growing_cycles, name='get_growing_cycles'),
     path('websocket-token', get_websocket_token, name='get_websocket_token'),
     path('cameras', post_camera, name='post_camera'),
     path('cameras/<str:camera_id>', CameraView.as_view(), name='camera_operations'),
     path('cameras/<str:camera_id>/livestream', get_camera_livestream, name='get_camera_livestream'),
     path('cameras/<str:camera_id>/images', get_camera_images, name='get_camera_snapshots'),
+    path('harvests', post_harvest, name='post_harvest'),
+    path('harvests/<str:harvest_id>', HarvestEditViews.as_view(), name='harvest_edits'),
+    path('harvests/list/<str:growing_cycle_id>', get_harvests, name='get_harvests'),
 ]
 
