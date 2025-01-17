@@ -4,11 +4,11 @@ from django.conf import settings
 from django.utils import timezone
 
 from farminsight_dashboard_backend.exceptions import NotFoundException
-from farminsight_dashboard_backend.models import FPF, Userprofile
-from farminsight_dashboard_backend.serializers import FPFSerializer, FPFPreviewSerializer
+from farminsight_dashboard_backend.models import FPF, Userprofile, Membership, SystemRole, MembershipRole
+from farminsight_dashboard_backend.serializers import FPFSerializer, FPFPreviewSerializer, FPFFunctionalSerializer
 from farminsight_dashboard_backend.utils import generate_random_api_key
 from .membership_services import get_memberships
-
+from django.core.exceptions import PermissionDenied
 
 def create_fpf(data) -> FPFSerializer:
     """
@@ -38,6 +38,32 @@ def create_fpf(data) -> FPFSerializer:
         InfluxDBManager.get_instance().sync_fpf_buckets()
 
     return serializer
+
+def update_fpf(fpf_id, data, user):
+    """
+    Only an Admin or an SysAdmin can update the FPF
+    :param fpf_id:
+    :param data:
+    :param user:
+    :return:
+    """
+    try:
+        membership = Membership.objects.get(userprofile_id=user.id)
+    except Membership.DoesNotExist:
+        raise NotFoundException(f'Membership {user.id} not found.')
+
+    memberships = get_memberships(user) \
+        .filter(organization_id=membership.organization.id, membershipRole=MembershipRole.Admin.value) \
+        .all()
+
+    if len(memberships) > 0 or user.systemRole == SystemRole.SystemAdmin.value:
+
+        fpf = FPF.objects.get(id=fpf_id)
+        serializer = FPFFunctionalSerializer(fpf, data=data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return serializer
+    raise PermissionDenied()
 
 
 def get_fpf_by_id(fpf_id: str):

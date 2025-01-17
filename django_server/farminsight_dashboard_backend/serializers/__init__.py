@@ -1,4 +1,4 @@
-from .fpf_serializer import FPFSerializer, FPFFullDataSerializer, FPFFullSerializer
+from .fpf_serializer import FPFSerializer, FPFFullDataSerializer, FPFFullSerializer, FPFFunctionalSerializer
 from .membership_serializer import MembershipSerializer
 from .userprofile_serializer import UserprofileSerializer
 from .organization_serializer import OrganizationSerializer, OrganizationFullSerializer
