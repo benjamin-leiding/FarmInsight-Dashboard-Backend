@@ -12,6 +12,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+images/
 env/
 build/
 develop-eggs/
@@ -190,3 +191,5 @@ fabric.properties
 # .idea
 
 db.sqlite3
+
+oidc.key
