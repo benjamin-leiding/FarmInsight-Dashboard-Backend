@@ -201,11 +201,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = '/admin/login/'
+
 OAUTH2_PROVIDER = {
     'SCOPES': {"openid": ''},
     'RESOURCE_SERVER_INTROSPECTION_URL': 'https://development-isse-identityserver.azurewebsites.net/connect/introspect',
     'RESOURCE_SERVER_INTROSPECTION_CREDENTIALS': ('interactive', ''),
-    'OAUTH2_VALIDATOR_CLASS': 'farminsight_dashboard_backend.custom_oauth_validator.CustomOAuth2Validator',
+    #'OAUTH2_VALIDATOR_CLASS': 'farminsight_dashboard_backend.custom_oauth_validator.CustomOAuth2Validator',
 }
 
 REST_FRAMEWORK = {

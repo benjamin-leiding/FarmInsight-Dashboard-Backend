@@ -19,8 +19,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 from django_server import settings
+from oauth2_provider import urls as oauth2_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('farminsight_dashboard_backend.urls')),
+    path('o/', include(oauth2_urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
