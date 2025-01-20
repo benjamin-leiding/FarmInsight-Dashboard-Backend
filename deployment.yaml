@@ -30,6 +30,9 @@ spec:
             - name: farminsight-env
               mountPath: /app/environment
               readOnly: true
+            - name: farminsight-rsa
+              mountPath: /app/rsa
+              readOnly: true
             - name: farminsight-backend-sqlite-pv
               mountPath: /app/database
             - name: farminsight-backend-image-pv
@@ -41,6 +44,12 @@ spec:
           items:
             - key: .env.dev
               path: .env.dev
+      - name: farminsight-rsa
+        configMap:
+          name: farminsight-rsa
+          items:
+            - key: oidc.key
+              path: oidc.key
       - name: farminsight-backend-sqlite-pv
         persistentVolumeClaim:
           claimName: farminsight-backend-sqlite-pvc
