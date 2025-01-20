@@ -52,7 +52,7 @@ CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(",")
 
 # Camera snapshot storage config
 MEDIA_URL = '/images/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+MEDIA_ROOT = BASE_DIR
 SITE_URL = "http://localhost:8000"
 
 # Application definition
@@ -88,7 +88,7 @@ ROOT_URLCONF = "django_server.urls"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [BASE_DIR / 'farminsight_dashboard_backend' / 'templates']
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -202,11 +202,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = '/api/login/'
+
+
 OAUTH2_PROVIDER = {
-    "SCOPES": {"openid": ""},
-    "RESOURCE_SERVER_INTROSPECTION_URL": env("RESOURCE_SERVER_INTROSPECTION_URL", default='https://development-isse-identityserver.azurewebsites.net/connect/introspect'),
-    "RESOURCE_SERVER_INTROSPECTION_CREDENTIALS": ("interactive", ""),
-    "OAUTH2_VALIDATOR_CLASS": "farminsight_dashboard_backend.custom_oauth_validator.CustomOAuth2Validator",
+    'OIDC_ENABLED': True,
+    'OIDC_RSA_PRIVATE_KEY': open(os.path.join(BASE_DIR, 'oidc.key')).read(),
+    'SCOPES': {"openid": ''},
 }
 
 REST_FRAMEWORK = {

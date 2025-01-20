@@ -1,7 +1,7 @@
 import cv2
 import asyncio
 
-async def http_stream(livestream_url:str):
+async def http_stream(livestream_url: str):
     """
      Asynchronous generator for streaming frames from http endpoint.
      """
@@ -12,7 +12,10 @@ async def http_stream(livestream_url:str):
         return
 
     try:
+        frame_interval = 1 / 30  # Target frame interval for 30 FPS
         while True:
+            start_time = asyncio.get_event_loop().time()
+
             success, frame = camera.read()
             if not success:
                 print("Failed to grab frame.")
@@ -26,8 +29,10 @@ async def http_stream(livestream_url:str):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
-            # Async sleep for frame rate control
-            await asyncio.sleep(0.01)
+            # Adjust sleep time based on processing time
+            elapsed_time = asyncio.get_event_loop().time() - start_time
+            sleep_time = max(0, frame_interval - elapsed_time)
+            await asyncio.sleep(sleep_time)
     finally:
         camera.release()
         print("Camera released.")
@@ -42,7 +47,9 @@ async def rtsp_stream(livestream_url:str):
         yield b"Error: Unable to open RTSP stream."
         return
     try:
+        frame_interval = 1 / 30  # Target frame interval for 30 FPS
         while True:
+            start_time = asyncio.get_event_loop().time()
             ret, frame = cap.read()
             if not ret:
                 break
@@ -52,7 +59,11 @@ async def rtsp_stream(livestream_url:str):
                     b'--frame\r\n'
                     b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n'
             )
-            await asyncio.sleep(0.01)
+
+            # Adjust sleep time based on processing time
+            elapsed_time = asyncio.get_event_loop().time() - start_time
+            sleep_time = max(0, frame_interval - elapsed_time)
+            await asyncio.sleep(sleep_time)
 
     finally:
         cap.release()
