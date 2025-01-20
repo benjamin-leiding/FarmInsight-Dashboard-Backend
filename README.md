@@ -40,6 +40,14 @@ INFLUXDB_INIT_PASSWORD=your_password
 INFLUXDB_INIT_TOKEN=your_token
 DOCKER_INFLUXDB_INIT_ORG=ETCE-LAB
 AUTH_SERVICE_URL=URL/connect/token
+REACT_APP_BACKEND_URL=URL
+DEBUG=bool
+ALLOWED_HOSTS="comma separated list of urls"
+CSRF_TRUSTED_ORIGINS="comma separated list of urls"
+CORS_ALLOWED_ORIGINS="comma separated list of urls"
+SECRET_KEY=RANDOM_SECRET_KEY!!
+OIDC_ISS_ENDPOINT=Own endpoint including domains if necessary
+
 CLIENT_ID=client_id
 CLIENT_SECRET=client_secret
 ```
