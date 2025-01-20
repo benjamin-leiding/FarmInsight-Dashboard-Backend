@@ -204,9 +204,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/api/login/'
 
-
 OAUTH2_PROVIDER = {
     'OIDC_ENABLED': True,
+    'OIDC_ISS_ENDPOINT': env('OIDC_ISS_ENDPOINT'),
     'OIDC_RSA_PRIVATE_KEY': open(os.path.join(BASE_DIR, 'rsa', 'oidc.key')).read(),
     'SCOPES': {"openid": ''},
 }
