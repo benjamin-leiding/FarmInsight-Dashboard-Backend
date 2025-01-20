@@ -207,7 +207,7 @@ LOGIN_URL = '/api/login/'
 
 OAUTH2_PROVIDER = {
     'OIDC_ENABLED': True,
-    'OIDC_RSA_PRIVATE_KEY': open(os.path.join(BASE_DIR, 'oidc.key')).read(),
+    'OIDC_RSA_PRIVATE_KEY': open(os.path.join(BASE_DIR, 'rsa', 'oidc.key')).read(),
     'SCOPES': {"openid": ''},
 }
 
