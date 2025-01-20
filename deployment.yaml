@@ -25,23 +25,7 @@ spec:
       - name: farminsight-dashboard-backend
         image: registry.etce.isse.tu-clausthal.de/etce-lab/farminsight-dashboard-backend:latest
         ports:
-        - containerPort: 8000 #The port for the node.js application container
-        env:
-        - name: DJANGO_SUPERUSER_EMAIL
-          valueFrom:
-            configMapKeyRef:
-              name: farminsight-backend-credentials
-              key: DJANGO_SUPERUSER_EMAIL
-        - name: DJANGO_SUPERUSER_PASSWORD
-          valueFrom:
-            configMapKeyRef:
-              name: farminsight-backend-credentials
-              key: DJANGO_SUPERUSER_PASSWORD
-        - name: DJANGO_SUPERUSER_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              name: farminsight-backend-credentials
-              key: DJANGO_SUPERUSER_USERNAME
+        - containerPort: 8000 #The port for the django container
         volumeMounts:
             - name: farminsight-env
               mountPath: /app/environment
